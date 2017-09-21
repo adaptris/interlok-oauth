@@ -19,6 +19,7 @@
   <target name="clean" depends="init" description="Clean build artifacts">
     <internal:project-build target="clean" project="salesforce"/>
     <internal:project-build target="clean" project="gcloud"/>
+    <internal:project-build target="clean" project="azure"/>
     <delete dir="${basedir}/activemq-data" failonerror="false"/>
     <delete dir="${basedir}/build" failonerror="false"/>
     <delete verbose="true" failonerror="false">
