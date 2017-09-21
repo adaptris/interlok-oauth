@@ -54,6 +54,15 @@
         <property name="ivy.repo" value="${ivy.repo}"/>
       </ant-properties>
     </internal:project-build>
+    <internal:project-build target="publish" project="azure">
+      <ant-properties>
+        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="ivy.publish.revision" value="${tag.version}"/>
+        <property name="ivy.user" value="${ivy.user}"/>
+        <property name="ivy.password" value="${ivy.password}"/>
+        <property name="ivy.repo" value="${ivy.repo}"/>
+      </ant-properties>
+    </internal:project-build>
   </target>
 
   <target name="snapshot.publish" depends="init, clean" unless="tag.version">
@@ -73,6 +82,14 @@
         <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
       </ant-properties>
     </internal:project-build>
+    <internal:project-build target="publish" project="azure">
+      <ant-properties>
+        <property name="ivy.user" value="${ivy.user}"/>
+        <property name="ivy.password" value="${ivy.password}"/>
+        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
+      </ant-properties>
+    </internal:project-build>
   </target>
 
   <target name="publish" depends="snapshot.publish, tagged.publish" description="Publish an artifact"/>
@@ -80,15 +97,18 @@
   <target name="test" depends="init" description="Run Tests">
     <internal:project-build target="test" project="salesforce"/>
     <internal:project-build target="test" project="gcloud"/>
+    <internal:project-build target="test" project="azure"/>
   </target>
 
   <target name="test-no-reports" depends="init" description="Run Tests w/o Reports">
     <internal:project-build target="test-no-reports" project="salesforce"/>
     <internal:project-build target="test-no-reports" project="gcloud"/>
+    <internal:project-build target="test-no-reports" project="azure"/>
   </target>
 
   <target name="jar" depends="init" description="Build all the jars">
     <internal:project-build target="jar" project="salesforce"/>
     <internal:project-build target="jar" project="gcloud"/>
+    <internal:project-build target="jar" project="azure"/>
   </target>
 </project>
