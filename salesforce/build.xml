@@ -102,7 +102,7 @@
   <target name="javadoc" depends="prepare-ivy" description="Create javadocs">
     <adapter:uml-javadoc-creator sourcepath="${src.dir}" destdir="${api.doc.dir}">
       <groups>
-        <group title="Interlok/HPCC Integration" packages="com.adaptris.core.oauth.salesforce:com.adaptris.core.oauth.salesforce.*"/>
+        <group title="Interlok OAUTH/Salesforce" packages="com.adaptris.core.oauth.salesforce:com.adaptris.core.oauth.salesforce.*"/>
       </groups>
     </adapter:uml-javadoc-creator>
     <copy todir="${api.doc.dir}">
