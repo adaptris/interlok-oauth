@@ -61,7 +61,9 @@ class SalesforceLoginWorker {
 
   CloseableHttpClient createClient() throws Exception {
     HttpClientBuilder builder = HttpClients.custom();
-    if (!isBlank(proxy)) {
+    // If someone does config a-la ${http.proxy}:${http.proxy.port} in config with var-sub
+    // we end up with : as a proxy...
+    if (!isBlank(proxy) && !proxy.equals(":")) {
       builder.setProxy(HttpHost.create(proxy));
     }
     return builder.build();
