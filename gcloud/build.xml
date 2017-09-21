@@ -1,4 +1,4 @@
-﻿<project basedir="." default="compile" name="oauth-salesforce" xmlns:adapter="uri:adapter" xmlns:ivy="antlib:org.apache.ivy.ant">
+﻿<project basedir="." default="compile" name="oauth-gcloud" xmlns:adapter="uri:adapter" xmlns:ivy="antlib:org.apache.ivy.ant">
   <property file="build.properties"/>
   <property file="ivy.properties"/>
   <import file="${basedir}/../ivy/ant-ivy-includes.xml"/> <!-- Ivy tasks -->
@@ -11,7 +11,7 @@
 
     <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>  <!-- Version number of this artifact -->
     <property name="adp-core-version" value="3.6-SNAPSHOT"/>
-    <property name="manifest.title" value="Interlok OAUTH/Salesforce"/>
+    <property name="manifest.title" value="Interlok OAUTH/Google Cloud"/>
     <property name="src.dir" value="${basedir}/src/main/java"/>
 
     <property name="testsrc.dir" value="${basedir}/src/test/java"/>
@@ -52,7 +52,7 @@
 
     <property name="project.dist.dir" value="${build.dir}/dist"/>
     <property name="project.jar.name" value = "${project.name}.jar"/>
-    <property name="project.pom.description" value="Retrieving OAUTH access tokens from Salesforce"/>
+    <property name="project.pom.description" value="Retrieving OAUTH access tokens from Google Cloud"/>
 
     <property name="tmp.jar.name" value = "${project.name}-tmp.jar"/>
     <property name="yguard.report" value="${build.dir}/${project.name}-${jar.version}.yguard.xml.gz"/>
@@ -102,7 +102,7 @@
   <target name="javadoc" depends="prepare-ivy" description="Create javadocs">
     <adapter:uml-javadoc-creator sourcepath="${src.dir}" destdir="${api.doc.dir}">
       <groups>
-        <group title="Interlok OAUTH/Salesforce" packages="com.adaptris.core.oauth.salesforce:com.adaptris.core.oauth.salesforce.*"/>
+        <group title="${manifest.title}" packages="com.adaptris.core.oauth.gcloud:com.adaptris.core.oauth.gcloud.*"/>
       </groups>
     </adapter:uml-javadoc-creator>
     <copy todir="${api.doc.dir}">

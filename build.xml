@@ -18,6 +18,7 @@
 
   <target name="clean" depends="init" description="Clean build artifacts">
     <internal:project-build target="clean" project="salesforce"/>
+    <internal:project-build target="clean" project="gcloud"/>
     <delete dir="${basedir}/activemq-data" failonerror="false"/>
     <delete dir="${basedir}/build" failonerror="false"/>
     <delete verbose="true" failonerror="false">
@@ -44,10 +45,27 @@
         <property name="ivy.repo" value="${ivy.repo}"/>
       </ant-properties>
     </internal:project-build>
+    <internal:project-build target="publish" project="gcloud">
+      <ant-properties>
+        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="ivy.publish.revision" value="${tag.version}"/>
+        <property name="ivy.user" value="${ivy.user}"/>
+        <property name="ivy.password" value="${ivy.password}"/>
+        <property name="ivy.repo" value="${ivy.repo}"/>
+      </ant-properties>
+    </internal:project-build>
   </target>
 
   <target name="snapshot.publish" depends="init, clean" unless="tag.version">
     <internal:project-build target="publish" project="salesforce">
+      <ant-properties>
+        <property name="ivy.user" value="${ivy.user}"/>
+        <property name="ivy.password" value="${ivy.password}"/>
+        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
+      </ant-properties>
+    </internal:project-build>
+    <internal:project-build target="publish" project="gcloud">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
@@ -61,13 +79,16 @@
 
   <target name="test" depends="init" description="Run Tests">
     <internal:project-build target="test" project="salesforce"/>
+    <internal:project-build target="test" project="gcloud"/>
   </target>
 
   <target name="test-no-reports" depends="init" description="Run Tests w/o Reports">
     <internal:project-build target="test-no-reports" project="salesforce"/>
+    <internal:project-build target="test-no-reports" project="gcloud"/>
   </target>
 
   <target name="jar" depends="init" description="Build all the jars">
     <internal:project-build target="jar" project="salesforce"/>
+    <internal:project-build target="jar" project="gcloud"/>
   </target>
 </project>
