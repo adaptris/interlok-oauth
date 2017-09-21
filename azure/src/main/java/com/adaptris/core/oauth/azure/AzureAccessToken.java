@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AzureAccessToken implements AccessTokenBuilder {
 
   /**
-   * The default URL for getting access tokens {@value #DEFAULT_AUTHORITY}.
+   * The default URL for getting access tokens: {@value #DEFAULT_AUTHORITY}.
    * 
    */
   public static final String DEFAULT_AUTHORITY = "https://login.microsoftonline.com/common/";
