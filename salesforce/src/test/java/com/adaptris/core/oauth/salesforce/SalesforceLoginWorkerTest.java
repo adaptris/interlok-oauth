@@ -36,6 +36,7 @@ public class SalesforceLoginWorkerTest {
   public void testCreateClient() throws Exception {
     assertNotNull(new SalesforceLoginWorker("http://localhost", "localhost:3128").createClient());
     assertNotNull(new SalesforceLoginWorker("http://localhost", null).createClient());
+    assertNotNull(new SalesforceLoginWorker("http://localhost", ":").createClient());
   }
 
   @Test
