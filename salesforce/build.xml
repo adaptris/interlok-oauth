@@ -52,7 +52,7 @@
 
     <property name="project.dist.dir" value="${build.dir}/dist"/>
     <property name="project.jar.name" value = "${project.name}.jar"/>
-    <property name="project.pom.description" value="${manifest.title}"/>
+    <property name="project.pom.description" value="Retrieving OAUTH access tokens from Salesforce"/>
 
     <property name="tmp.jar.name" value = "${project.name}-tmp.jar"/>
     <property name="yguard.report" value="${build.dir}/${project.name}-${jar.version}.yguard.xml.gz"/>
