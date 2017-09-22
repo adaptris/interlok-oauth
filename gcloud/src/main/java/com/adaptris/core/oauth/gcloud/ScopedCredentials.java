@@ -5,6 +5,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public abstract class ScopedCredentials implements Credentials {
   @NotNull
   @Valid
   @XStreamImplicit(itemFieldName = "scope")
-  private List<String> scopes;
+  private List<String> scopes = new ArrayList<>();
 
   public ScopedCredentials() {
   }
