@@ -33,6 +33,11 @@
     <dependency org="com.adaptris" name="adp-stubs" rev="${adp-core-version}" changing="true" conf="test->default"/>
 
     <dependency org="com.microsoft.azure" name="adal4j" rev="1.2.0" conf="compile->default"/>
+    <!-- 
+       This forces it to be same as the json packages; one of the dependencies specifis [1.3.1,2.3] 
+    -->
+    <dependency org="net.minidev" name="json-smart" rev="2.2.1" conf="compile->default"/>
+    
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.24" conf="compile->default" />
     <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.24" conf="optional->default" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.24" conf="optional->default"/>
