@@ -34,6 +34,10 @@
 
     <dependency org="com.google.auth" name="google-auth-library-oauth2-http" rev="0.7.1" conf="compile->default"/>
 
+    <!-- keep denpdencies inline with apache-http -->
+    <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5" conf="compile->default"/>
+    <dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.6.2" conf="compile->default"/>
+
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.24" conf="compile->default" />
     <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.24" conf="optional->default" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.24" conf="optional->default"/>
