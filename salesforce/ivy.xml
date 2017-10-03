@@ -2,7 +2,7 @@
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
   <info organisation="com.adaptris" module="interlok-oauth-salesforce" revision="${ivy.publish.revision}" status="release">
     <ivyauthor name="Adaptris"/>
-    <description homepage="http://interlok.adaptris.net/interlok-docs/"/>
+    <description homepage="http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html"/>
   </info>  
 
   <configurations>
