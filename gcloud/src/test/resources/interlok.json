@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "interlok-test",
+  "private_key_id": "valid-but-useless-key",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALKgL+8vHEdW8uXA\n8ezp+/5G5PA5gYEuBHH5/HmnrgHDUi+cAanj0fQJ5pyRM3ny7SORi4oB3SlUnZmz\nLulKhVyJGonUefu2DberaLaO+3Ou6jcX6SeKV7IoQJWxJ+d2O7b2vEA3XvrHo3bz\nmlRvdmXTgC6rSnS7WO1CYY31Mmt3AgMBAAECgYBYrd4eSK0pXalJFvkEPUW1f0y5\nVlNM5qOeUhVd8Dka9vUeXb0VstzQ4vlyUUPVDx1bwy4bXcGGe1Oisqpfd3etHKag\nTmYKkGzjljHY2Woby098b2XySanT3R1jVWUQyU1kDBDDmYibf38dra+hm4V6AEye\ntDhbA5uRCRZoE/zBAQJBANnde6TE3ZcVID+ie1x+Gnh990Q3j4kHb8eUT8Xw4PQa\nlcicuuDLFOVDXX5HjxohdGkJg6MdDVAr3qlWSzqBUIcCQQDR5GOQZ6/aLP5gNmht\n8zRo4SQz2x/oaueeSXHlW5x1LUyJzA67AYJ+BPnymzoSndqFakaQZi/ekQqIXiai\n/HmRAkBjncABUPq5MDG0pwic/BQCcCZ1jKoWz82uhgQLz94r/1PpjLBuRK1jPvAq\n43FtU0q1FGKaXJhPxh9jck+niqVVAkBku6ThIDIwlpl62YHjCu7jSvJSBN9abzw8\nJmmINyBuyE/Mbme/bmkPTBodSkxjtOi0UR4OnUxqF9gjPHR0kpFRAkEAraI6fWhj\nAcA2iuhs8wEvzXrCNooYQ8BTjmuoorSxu6LJnxHzDS5HmmcVgCxfzPu6ljB8a6bn\nKtLx1QGm8LdaLw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "dev@localhost.host",
+  "client_id": "1234",
+  "auth_uri": "https://localhost/o/oauth2/auth",
+  "token_uri": "https://localhost/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://localhost/oauth2/v1/certs",
+  "client_x509_cert_url": "https://localhost/robot/v1/metadata/x509/dev%40localhost.host"
+}
