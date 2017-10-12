@@ -14,6 +14,16 @@
         </ant>
       </sequential>
     </macrodef>
+
+    <condition property="unsigned.code" value="true" else="false">
+      <not>
+        <and>
+          <isset property="code-signing.keypass"/>
+          <isset property="code-signing.storepass"/>
+        </and>
+      </not>
+    </condition>
+
   </target>
 
   <target name="clean" depends="init" description="Clean build artifacts">
@@ -39,6 +49,9 @@
   <target name="tagged.publish" depends="init, clean" if="tag.version">
     <internal:project-build target="publish" project="salesforce">
       <ant-properties>
+        <property name="unsigned.code" value="${unsigned.code}"/>
+        <property name="code-signing.keypass" value="${code-signing.keypass}"/>
+        <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="adp-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
@@ -48,6 +61,9 @@
     </internal:project-build>
     <internal:project-build target="publish" project="gcloud">
       <ant-properties>
+        <property name="unsigned.code" value="${unsigned.code}"/>
+        <property name="code-signing.keypass" value="${code-signing.keypass}"/>
+        <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="adp-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
@@ -57,6 +73,9 @@
     </internal:project-build>
     <internal:project-build target="publish" project="azure">
       <ant-properties>
+        <property name="unsigned.code" value="${unsigned.code}"/>
+        <property name="code-signing.keypass" value="${code-signing.keypass}"/>
+        <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="adp-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
@@ -69,6 +88,9 @@
   <target name="snapshot.publish" depends="init, clean" unless="tag.version">
     <internal:project-build target="publish" project="salesforce">
       <ant-properties>
+        <property name="unsigned.code" value="${unsigned.code}"/>
+        <property name="code-signing.keypass" value="${code-signing.keypass}"/>
+        <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
         <property name="adp-core-version" value="3.6-SNAPSHOT"/>
@@ -77,6 +99,9 @@
     </internal:project-build>
     <internal:project-build target="publish" project="gcloud">
       <ant-properties>
+        <property name="unsigned.code" value="${unsigned.code}"/>
+        <property name="code-signing.keypass" value="${code-signing.keypass}"/>
+        <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
         <property name="adp-core-version" value="3.6-SNAPSHOT"/>
@@ -85,6 +110,9 @@
     </internal:project-build>
     <internal:project-build target="publish" project="azure">
       <ant-properties>
+        <property name="unsigned.code" value="${unsigned.code}"/>
+        <property name="code-signing.keypass" value="${code-signing.keypass}"/>
+        <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
         <property name="adp-core-version" value="3.6-SNAPSHOT"/>

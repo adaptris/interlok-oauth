@@ -15,11 +15,11 @@
     <property name="signjar.tsa.url" value="http://tsa.starfieldtech.com"/>
     <property name="signjar.tsa.url" value="http://timestamp.verisign.com/>
     -->
-    <property name="signjar.tsa.url" value="https://timestamp.geotrust.com/tsa"/>
+    <property name="signjar.tsa.url" value="http://sha256timestamp.ws.symantec.com/sha256/timestamp"/>
 
     <property name="interlok-api.javadoc.url" value="https://development.adaptris.net/javadocs/latest/Interlok-API/"/>
     <property name="interlok-common.javadoc.url" value="https://development.adaptris.net/javadocs/latest/Interlok-Common/"/>
-    
+
     <!-- Default publish type is "JAR" -->
     <property name="ivy.publish.bundle.type" value="jar"/>
     <property name="ivy.report.dir" value="${build.dir}/ivy-report"/>
@@ -28,6 +28,8 @@
     <property name="coverage.build.dir" value="${build.dir}/coverage"/>
     <property name="coverage.metadata.file" value="${basedir}/jacoco.exec"/>
 
+    <property name="code-signing.keystore"  value="${build.dir}/signing/code-signing.jks"/>
+    <property name="code-signing.alias" value="code_signer"/>
     <!-- Default this to false, so that we always sign -->
     <property name="unsigned.code"          value="false"/>
     <tstamp>
@@ -35,6 +37,7 @@
     </tstamp>
     <property environment="env"/>
     <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
+    <!-- On Windows the Environment-Variable is not all uppercase -->
     <path id="combined-PATH">
       <pathelement path="${env.PATH}"/>
       <pathelement path="${env.Path}"/>
@@ -74,6 +77,8 @@
     <property name="cc.classpath" refid="main.classpath"/>
     <echo message="Ivy Resolved Classpath - ${cc.classpath}" level="verbose"/>
     <echo message="Ivy Resolved Classpath for ant - ${anttools.classpath}" level="verbose"/>
+    <!-- yguard obfuscator -->
+    <taskdef name="obfuscate" classname="com.yworks.yguard.YGuardTask" classpathref="classpath.ant-tools" />
     <!-- antcontrib (if statements) -->
     <typedef resource="net/sf/antcontrib/antlib.xml" classpathref="classpath.ant-tools" />
     <!-- jacoco coverage -->
@@ -133,6 +138,8 @@
       <attribute name="manifest"/>
       <attribute name="version" default="${ivy.publish.revision}"/>
       <attribute name="version-title"/>
+      <element name="obfuscate-patternset" optional="true"/>
+      <element name="obfuscate-externals" optional="true"/>
       <element name="jar-services" optional="true"/>
       <sequential>
         <mkdir dir="@{basedir}/META-INF"/>
@@ -141,13 +148,73 @@
           <entry key="build.version" value="@{version}"/>
           <entry key="build.date" value="${build.date}"/>
         </propertyfile>
-        <jar jarfile="@{jarfile}"  manifest="@{manifest}" >
-          <fileset dir="@{basedir}"/>
-          <jar-services/>
-        </jar>
+        <var name="tmp.jar" value="${build.dir}/tmp.jar"/>
+        <if>
+          <istrue value="${no.obfuscation}"/>
+          <then>
+            <jar jarfile="@{jarfile}"  manifest="@{manifest}" >
+              <fileset dir="@{basedir}"/>
+              <jar-services/>
+            </jar>
+          </then>
+          <else>
+            <jar jarfile="${tmp.jar}"  manifest="@{manifest}" >
+              <fileset dir="@{basedir}"/>
+              <jar-services/>
+            </jar>
+            <adapter:obfuscate input.jar="${tmp.jar}" output.jar="@{jarfile}">
+              <patternset-filter>
+                <obfuscate-patternset/>
+              </patternset-filter>
+              <additional-externalclasses>
+                <obfuscate-externals/>
+              </additional-externalclasses>
+            </adapter:obfuscate>
+          </else>
+        </if>
+        <adapter:sign-jar jarfile="@{jarfile}"/>
+        <var name="tmp.jar" unset="true"/>
       </sequential>
     </macrodef>
 
+    <macrodef name="obfuscate" uri="uri:adapter">
+      <attribute name="input.jar"/>
+      <attribute name="output.jar"/>
+      <attribute name="yguard.report" default="${build.dir}/yguard.xml"/>
+      <element name="patternset-filter" optional="true"/>
+      <element name="additional-externalclasses" optional="true"/>
+      <sequential>
+        <obfuscate>
+          <inoutpair in="@{input.jar}" out="@{output.jar}" resources="copy"/>
+          <attribute name="Deprecated"/>
+          <rename replaceclassnamestrings="true" conservemanifest="true" logfile="@{yguard.report}">
+            <property name="expose-attributes" value="Deprecated"/>
+            <property name="language-conformity" value="legal"/>
+            <property name="naming-scheme" value="mix"/>
+            <keep>
+              <class classes="protected" methods="protected" fields="private">
+                <patternset>
+                  <include name="com.adaptris.**.*"/>
+                  <patternset-filter/>
+                </patternset>
+              </class>
+              <attribute name="Deprecated, SourceFile, LineNumberTable, RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations, RuntimeInvisibleAnnotations, RuntimeInvisibleParameterAnnotations">
+                <patternset>
+                  <include name="com.adaptris.**.*"/>
+                  <patternset-filter/>
+                </patternset>
+              </attribute>
+            </keep>
+          </rename>
+          <externalclasses>
+            <path refid="main.classpath"/>
+            <pathelement location="${ant.core.lib}"/>
+            <additional-externalclasses/>
+          </externalclasses>
+        </obfuscate>
+        <delete file="@{input.jar}"/>
+      </sequential>
+    </macrodef>
 
     <macrodef name="get-offline-javadocs" uri="uri:adapter">
       <attribute name="destdir" default="${build.dir}/offline-javadocs"/>
@@ -180,7 +247,7 @@
         </if>
       </sequential>
     </macrodef>
-    
+
     <macrodef name="create-javadocs" uri="uri:adapter">
       <attribute name="destdir" default="${api.doc.dir}"/>
       <attribute name="sourcepath" default="${src.dir}"/>
@@ -189,15 +256,9 @@
       <element name="packageset-filter" optional="true"/>
       <sequential>
         <adapter:get-offline-javadocs/>
-      
-        <javadoc author="false" destdir="@{destdir}"
-          windowtitle="Interlok Adapter Framework API" bottom="Copyright Adaptris"
-          access="protected" breakiterator="yes" verbose="no"
-          charset="ISO-8859-1" >
+        <javadoc author="false" destdir="@{destdir}" windowtitle="Interlok Adapter Framework API" bottom="Copyright Adaptris"
+                 access="protected" breakiterator="yes" verbose="no" charset="ISO-8859-1" >
           <arg value="-quiet"/>
-          <!-- java8 only
-          <arg value="-Xdoclint:none"/>
-          -->
           <arg value="-Xdoclint:none"/>
           <packageset dir="@{sourcepath}" defaultexcludes="yes">
             <packageset-filter/>
@@ -428,7 +489,6 @@
         <delete file="${coverage.metadata.file}" />
         <jacoco:coverage  destfile="${coverage.metadata.file}">
           <junit printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}" failureproperty="junit.failed">
-            <jvmarg value="-Xmx${execution.maxmem}"/>
             <jvmarg value="-XX:-UseSplitVerifier"/>
             <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
             <jvmarg value="-XX:+UseConcMarkSweepGC"/>
@@ -464,7 +524,6 @@
       <element name="junit-execution-filter" optional="true"/>
       <sequential>
         <junit printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}" failureproperty="junit.failed">
-          <jvmarg value="-Xmx${execution.maxmem}"/>
           <jvmarg value="-XX:-UseSplitVerifier"/>
           <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
           <jvmarg value="-XX:+UseConcMarkSweepGC"/>
@@ -489,6 +548,30 @@
       </sequential>
     </macrodef>
 
+    <macrodef name="sign-jar" uri="uri:adapter">
+      <attribute name="tsaurl" default="${signjar.tsa.url}"/>
+      <attribute name="jarfile"/>
+      <sequential>
+        <if>
+          <and>
+            <isfalse value="${unsigned.code}"/>
+            <isset property="code-signing.keypass"/>
+            <isset property="code-signing.storepass"/>
+          </and>
+          <then>
+            <!-- We could specify the digestalg / sigalg to backwards compatibility as JDK7 only comes with
+                 SHA256 and SHA256withRSA and if we were to deploy on JRE1.6...
+                 e.g. sigalg="MD5withRSA" digestalg="SHA1"
+                 We sign in backwards compatibility mode because of jms-jmx (which could be deployed in a v2).
+             Use http://tsa.starfieldtech.com or https://timestamp.geotrust.com/tsa as the TSAURL.
+            -->
+            <signjar jar="@{jarfile}" alias="${code-signing.alias}" keystore="${code-signing.keystore}" storepass="${code-signing.storepass}" keypass="${code-signing.keypass}" sigalg="MD5withRSA" digestalg="SHA1" tsaurl="@{tsaurl}">
+            </signjar>
+          </then>
+        </if>
+      </sequential>
+    </macrodef>
+
     <macrodef name="publish-artifact" uri="uri:adapter">
       <attribute name="resolver"/>
       <attribute name="ivy-config"/>
@@ -497,7 +580,7 @@
       <attribute name="artifact.basedir" default="${project.dist.dir}"/>
       <sequential>
         <ivy:resolve file="@{ivy-config}" refresh="true" log="${ivy.logging}"/>
-        <ivy:publish resolver="@{resolver}" revision="@{revision}" overwrite="true" status="@{status}" publishivy="true" conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional,examples">
+        <ivy:publish resolver="@{resolver}" revision="@{revision}" overwrite="true" status="@{status}" publishivy="true" haltonmissing="false" conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional,examples">
           <artifacts pattern="@{artifact.basedir}/[module]/[type]/[artifact].[ext]"/>
         </ivy:publish>
       </sequential>
@@ -521,10 +604,35 @@
         </manifest>
       </sequential>
     </macrodef>
+
+    <macrodef name="curl-upload" uri="uri:adapter">
+      <attribute name="file"/>
+      <attribute name="url"/>
+      <attribute name="user" default="${ivy.user}"/>
+      <attribute name="password" default="${ivy.password}"/>
+      <sequential>
+        <echo message="CURL: Uploading @{file} to @{url}"/>
+        <exec executable="curl">
+          <arg value="--silent"/>
+          <arg value="--show-error"/>
+          <arg value="-u"/>
+          <arg value="@{user}:@{password}"/>
+          <arg value="--upload-file"/>
+          <arg value="@{file}"/>
+          <arg value="@{url}"/>
+        </exec>
+      </sequential>
+    </macrodef>
   </target>
 
 
   <target name="prepare-ivy" depends="macrodef.init,taskdef.init">
+    <!-- set up main compile classpath using ivy dependecny management -->
+    <!-- Because of MSMQ, we need to restrict it to only standard types, as otherwise we'll have
+         big trouble with .dll + .LIC files
+    -->
+    <mkdir dir="${build.dir}/signing"/>
+    <ivy:retrieve log="${ivy.logging}" pattern="${build.dir}/signing/[artifact].[ext]" conf="signing" type="jks"/>
   </target>
 
   <target name="ivy-report" depends="macrodef.init,taskdef.init" description="Generate an ivy dependency report">
@@ -540,13 +648,20 @@
 
   <target name="prepare-for-publish" depends="test-no-reports, jar, javadoc">
     <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
-
     <!-- Stick a shim in here to support WAR files -->
+    <!-- If the WAR file is far too large so we don't create it in the sub-dir, so ivy doesn't try to publish it
+         ZZLC - Check the length, and then do the copy if it's < 50 Mb...
+    -->
     <if>
       <equals arg1="war" arg2="${ivy.publish.bundle.type}"/>
       <then>
-        <mkdir dir="${project.dist.dir}/${project.name}/war"/>
-        <copy todir="${project.dist.dir}/${project.name}/war" file="${project.dist.dir}/${project.war.name}"/>
+        <if>
+          <length file="${project.dist.dir}/${project.war.name}" when="less" length="52428800" />
+          <then>
+            <mkdir dir="${project.dist.dir}/${project.name}/war"/>
+            <copy todir="${project.dist.dir}/${project.name}/war" file="${project.dist.dir}/${project.war.name}"/>
+          </then>
+        </if>
       </then>
     </if>
     <if>
@@ -584,12 +699,28 @@
         </zip>
       </then>
     </if>
-    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
+    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}" conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
   </target>
 
   <target name="publish" depends="prepare-for-publish">
     <adapter:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.xml.file}"/>
+    <!-- This publishes the WAR file if it's missing from the prepare-for-publish -->
+    <if>
+      <equals arg1="war" arg2="${ivy.publish.bundle.type}"/>
+      <then>
+        <if>
+          <length file="${project.dist.dir}/${project.war.name}" when="greater" length="52428800" />
+          <then>
+            <var name="project.war.name.nexus" value="${project.name}-${ivy.publish.revision}.${ivy.publish.bundle.type}"/>
+            <checksum file="${project.dist.dir}/${project.war.name}" algorithm="MD5" pattern="{1}.{0}" forceoverwrite="true"/>
+            <checksum file="${project.dist.dir}/${project.war.name}" algorithm="SHA1" pattern="{1}.{0}" forceoverwrite="true"/>
+            <adapter:curl-upload file="${project.dist.dir}/${project.war.name}" url="${nexus.artifact.basedir}/${ivy.publish.revision}/${project.war.name.nexus}"/>
+            <adapter:curl-upload file="${project.dist.dir}/${project.war.name}.MD5" url="${nexus.artifact.basedir}/${ivy.publish.revision}/${project.war.name.nexus}.md5"/>
+            <adapter:curl-upload file="${project.dist.dir}/${project.war.name}.SHA1" url="${nexus.artifact.basedir}/${ivy.publish.revision}/${project.war.name.nexus}.sha1"/>
+            <var name="project.war.name.nexus" unset="true"/>
+          </then>
+        </if>
+      </then>
+    </if>
   </target>
-
-
 </project>
