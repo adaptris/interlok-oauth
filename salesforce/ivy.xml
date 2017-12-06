@@ -36,7 +36,7 @@
 
     <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5" conf="compile->default"/>
 
-    <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.6.2" conf="compile->default"/>
+    <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.10" conf="compile->default"/>
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.24" conf="compile->default" />
     <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.24" conf="optional->default" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.24" conf="optional->default"/>
