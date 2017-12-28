@@ -52,4 +52,10 @@ public class GetOauthTokenTest extends ServiceCase {
     return null;
   }
 
+  @Override
+  protected String createBaseFileName(Object object) {
+    GetOauthToken oauth = (GetOauthToken) object;
+    return String.format("%s-%s", super.createBaseFileName(object), oauth.getAccessTokenBuilder().getClass().getSimpleName());
+  }
+
 }
