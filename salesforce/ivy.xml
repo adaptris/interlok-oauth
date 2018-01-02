@@ -26,6 +26,7 @@
      <artifact name="interlok-oauth-salesforce-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
      <artifact name="interlok-oauth-salesforce-examples" type="examples" ext="zip" conf="examples"/>
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
+     <artifact type="examples" ext="jar" conf="examples" m:classifier="examples"/>
   </publications>
   <dependencies>
     <dependency org="com.adaptris" name="adp-core" rev="${adp-core-version}" conf="compile->default;javadoc->javadoc" changing="true"/>
