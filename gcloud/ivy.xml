@@ -23,8 +23,8 @@
   <publications>
      <artifact name="interlok-oauth-gcloud" type="jar" ext="jar"  conf="*"/>
      <artifact name="interlok-oauth-gcloud" type="pom" ext="pom" conf="*"/>
-     <artifact name="interlok-oauth-gcloud-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
-     <artifact name="interlok-oauth-gcloud-examples" type="examples" ext="zip" conf="examples"/>
+
+
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
      <artifact type="examples" ext="jar" conf="examples" m:classifier="examples"/>
   </publications>
