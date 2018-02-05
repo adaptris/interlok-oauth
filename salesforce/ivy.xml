@@ -23,9 +23,10 @@
   <publications>
      <artifact name="interlok-oauth-salesforce" type="jar" ext="jar"  conf="*"/>
      <artifact name="interlok-oauth-salesforce" type="pom" ext="pom" conf="*"/>
-     <artifact name="interlok-oauth-salesforce-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
-     <artifact name="interlok-oauth-salesforce-examples" type="examples" ext="zip" conf="examples"/>
+
+
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
+     <artifact type="examples" ext="jar" conf="examples" m:classifier="examples"/>
   </publications>
   <dependencies>
     <dependency org="com.adaptris" name="adp-core" rev="${adp-core-version}" conf="compile->default;javadoc->javadoc" changing="true"/>
@@ -36,7 +37,7 @@
 
     <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5" conf="compile->default"/>
 
-    <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.6.2" conf="compile->default"/>
+    <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.10" conf="compile->default"/>
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.24" conf="compile->default" />
     <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.24" conf="optional->default" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.24" conf="optional->default"/>
@@ -48,7 +49,7 @@
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="com.yworks"  name="yguard" rev="2.5.2" conf="ant->default" transitive="false"/>
-    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
+    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.9" conf="ant->default"/>
     <dependency org="nl.talsmasoftware" name="umldoclet" rev="1.0.3" conf="ant->default"/>
     <dependency org="net.sourceforge.plantuml" name="plantuml" rev="8046" conf="ant->default"/>
     <dependency org="com.adaptris" name="code-signing" rev="2019-RELEASE" conf="signing->default"/>

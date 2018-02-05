@@ -23,9 +23,10 @@
   <publications>
      <artifact name="interlok-oauth-azure" type="jar" ext="jar"  conf="*"/>
      <artifact name="interlok-oauth-azure" type="pom" ext="pom" conf="*"/>
-     <artifact name="interlok-oauth-azure-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
-     <artifact name="interlok-oauth-azure-examples" type="examples" ext="zip" conf="examples"/>
+
+
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
+     <artifact type="examples" ext="jar" conf="examples" m:classifier="examples"/>
   </publications>
   <dependencies>
     <dependency org="com.adaptris" name="adp-core" rev="${adp-core-version}" conf="compile->default;javadoc->javadoc" changing="true"/>
@@ -51,7 +52,7 @@
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="com.yworks"  name="yguard" rev="2.5.2" conf="ant->default" transitive="false"/>
-    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
+    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.9" conf="ant->default"/>
     <dependency org="nl.talsmasoftware" name="umldoclet" rev="1.0.3" conf="ant->default"/>
     <dependency org="net.sourceforge.plantuml" name="plantuml" rev="8046" conf="ant->default"/>
     <dependency org="com.adaptris" name="code-signing" rev="2019-RELEASE" conf="signing->default"/>

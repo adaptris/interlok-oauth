@@ -93,8 +93,8 @@
         <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
       </ant-properties>
     </internal:project-build>
     <internal:project-build target="publish" project="gcloud">
@@ -104,8 +104,8 @@
         <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
       </ant-properties>
     </internal:project-build>
     <internal:project-build target="publish" project="azure">
@@ -115,8 +115,8 @@
         <property name="code-signing.storepass" value="${code-signing.storepass}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
       </ant-properties>
     </internal:project-build>
   </target>
