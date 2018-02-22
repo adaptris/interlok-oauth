@@ -1,7 +1,5 @@
 package com.adaptris.core.oauth.salesforce;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.CreateQueryStringFromMetadata;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -66,13 +65,13 @@ public class SalesforceAccessToken implements AccessTokenBuilder {
   @InputFieldHint(expression = true)
   private String username;
   @NotBlank
-  @InputFieldHint(style = "password", expression = true)
+  @InputFieldHint(style = "password", expression = true, external = true)
   private String password;
   @NotBlank
   @InputFieldHint(expression = true)
   private String consumerKey;
   @NotBlank
-  @InputFieldHint(style = "password", expression = true)
+  @InputFieldHint(style = "password", expression = true, external = true)
   private String consumerSecret;
 
   @AdvancedConfig
@@ -98,17 +97,13 @@ public class SalesforceAccessToken implements AccessTokenBuilder {
 
   @Override
   public void init() throws CoreException {
-    if (isBlank(getUsername())) {
-      throw new CoreException("Blank username");
-    }
-    if (isBlank(getPassword())) {
-      throw new CoreException("Blank Password");
-    }
-    if (isBlank(getConsumerKey())) {
-      throw new CoreException("Blank Consumer Key");
-    }
-    if (isBlank(getConsumerSecret())) {
-      throw new CoreException("Blank Consumer Secret");
+    try {
+      Args.notBlank(getUsername(), "username");
+      Args.notBlank(getPassword(), "password");
+      Args.notBlank(getConsumerKey(), "consumerKey");
+      Args.notBlank(getConsumerSecret(), "consumerSecret");
+    } catch (IllegalArgumentException e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -143,10 +138,10 @@ public class SalesforceAccessToken implements AccessTokenBuilder {
   private HttpEntity createEntity(AdaptrisMessage msg) throws PasswordException, UnsupportedEncodingException {
     List<NameValuePair> login = new ArrayList<NameValuePair>();
     login.add(new BasicNameValuePair("client_id", msg.resolve(getConsumerKey())));
-    login.add(new BasicNameValuePair("client_secret", Password.decode(msg.resolve(getConsumerSecret()))));
+    login.add(new BasicNameValuePair("client_secret", Password.decode(msg.resolve(ExternalResolver.resolve(getConsumerSecret())))));
     login.add(new BasicNameValuePair("grant_type", "password"));
     login.add(new BasicNameValuePair("username", msg.resolve(getUsername())));
-    login.add(new BasicNameValuePair("password", Password.decode(msg.resolve(getPassword()))));
+    login.add(new BasicNameValuePair("password", Password.decode(msg.resolve(ExternalResolver.resolve(getPassword())))));
     return new UrlEncodedFormEntity(login);
   }
 
