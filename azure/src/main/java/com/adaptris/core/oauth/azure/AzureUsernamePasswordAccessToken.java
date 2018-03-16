@@ -10,6 +10,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.http.oauth.GetOauthToken;
 import com.adaptris.core.util.Args;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -39,7 +40,7 @@ public class AzureUsernamePasswordAccessToken extends AzureAccessTokenImpl {
   @InputFieldHint(expression = true)
   private String username;
   @NotBlank
-  @InputFieldHint(style = "password", expression = true)
+  @InputFieldHint(style = "password", expression = true, external = true)
   private String password;
 
   public AzureUsernamePasswordAccessToken() {
@@ -72,7 +73,7 @@ public class AzureUsernamePasswordAccessToken extends AzureAccessTokenImpl {
   protected AuthenticationResult doAzureAuth(AdaptrisMessage msg) throws Exception {
     AuthenticationContext context = authenticationContext(msg);
     Future<AuthenticationResult> future = context.acquireToken(msg.resolve(getResource()), msg.resolve(getClientId()),
-        msg.resolve(getUsername()), Password.decode(msg.resolve(getPassword())), null);
+        msg.resolve(getUsername()), Password.decode(msg.resolve(ExternalResolver.resolve(getPassword()))), null);
     AuthenticationResult result = future.get(); // should throw an ExecutionException if it's the wrong password?
     if (result == null) {
       throw new Exception("Authentication result was null");

@@ -10,6 +10,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.http.oauth.GetOauthToken;
 import com.adaptris.core.util.Args;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -37,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AzureClientSecretAccessToken extends AzureAccessTokenImpl {
 
   @NotBlank
-  @InputFieldHint(expression = true, style = "PASSWORD")
+  @InputFieldHint(expression = true, style = "PASSWORD", external = true)
   private String clientSecret;
 
   public AzureClientSecretAccessToken() {
@@ -67,7 +68,8 @@ public class AzureClientSecretAccessToken extends AzureAccessTokenImpl {
   @Override
   protected AuthenticationResult doAzureAuth(AdaptrisMessage msg) throws Exception {
     AuthenticationContext context = authenticationContext(msg);
-    ClientCredential secret = new ClientCredential(msg.resolve(getClientId()), Password.decode(msg.resolve(getClientSecret())));
+    ClientCredential secret = new ClientCredential(msg.resolve(getClientId()),
+        Password.decode(msg.resolve(ExternalResolver.resolve(getClientSecret()))));
     Future<AuthenticationResult> future = context.acquireToken(msg.resolve(getResource()), secret, null);
     AuthenticationResult result = future.get();
     if (result == null) {
