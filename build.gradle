@@ -33,6 +33,7 @@ subprojects {
 
   // In this section you declare where to find the dependencies of your project
   repositories {
+    jcenter()
     maven {	url "$defaultNexusRepo" }
     maven { url "https://development.adaptris.net/nexus/content/groups/public" }
     maven {
