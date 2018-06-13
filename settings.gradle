@@ -1,0 +1,4 @@
+rootProject.name = 'interlok-oauth'
+include 'azure'
+include 'gcloud'
+include 'salesforce'

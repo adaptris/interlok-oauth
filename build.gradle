@@ -1,0 +1,126 @@
+ext {
+  adpCoreVersion = project.hasProperty('adpCoreVersion') ? project.getProperty('adpCoreVersion') : '3.7-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.7-SNAPSHOT'
+  mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : 'https://development.adaptris.net/nexus/content/repositories/snapshots'
+  repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
+  repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
+  defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
+  interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : 'https://development.adaptris.net/javadocs/latest/Interlok-API/'
+  interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : 'https://development.adaptris.net/javadocs/latest/Interlok-Common/'
+  slf4jVersion = '1.7.25'
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+  allprojects {
+    tasks.withType(Javadoc) {
+      options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
+}
+
+
+subprojects {
+  // Apply the java plugin to add support for Java
+  apply plugin: 'java'
+  apply plugin: 'maven'
+  apply plugin: 'maven-publish'
+  apply plugin: "jacoco"
+
+  sourceCompatibility = 1.7
+  group   = 'com.adaptris'
+  version = releaseVersion
+  def versionDir = "$buildDir/version"
+
+  // In this section you declare where to find the dependencies of your project
+  repositories {
+    maven {	url "$defaultNexusRepo" }
+    maven { url "https://development.adaptris.net/nexus/content/groups/public" }
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url "https://development.adaptris.net/nexus/content/groups/private"
+    }
+    maven { url "https://development.adaptris.net/nexus/content/repositories/snapshots" }
+    maven { url "https://development.adaptris.net/nexus/content/repositories/releases" }
+  }
+
+  configurations {
+    javadoc {}
+    all*.exclude group: 'c3p0'
+    all*.exclude group: 'commons-logging'
+    all*.exclude group: 'javamail'
+    all*.exclude group: 'javax.mail', module: 'mail'
+    all*.exclude group: 'org.glassfish.hk2.external'
+    all*.exclude group: 'xalan', module: 'xalan'
+    all*.exclude group: 'net.sf.saxon', module: 'saxon'
+    all*.exclude group: 'org.codehaus.woodstox'
+    all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+  }
+
+  configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+  }
+
+  // In this section you declare the dependencies for your production and test code
+  dependencies {
+      compile ("com.adaptris:adp-core:$adpCoreVersion") { changing= true}
+      compile ("com.adaptris:adp-core-apt:$adpCoreVersion") { changing= true}
+      compile ("org.slf4j:slf4j-api:$slf4jVersion")
+
+      testCompile ('junit:junit:4.12')
+      testCompile ("com.adaptris:adp-stubs:$adpCoreVersion") { changing= true}
+      testCompile ("org.apache.logging.log4j:log4j-core:2.8.1")
+      testCompile ("org.apache.logging.log4j:log4j-1.2-api:2.8.1")
+      testCompile ("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+      testCompile ("org.apache.logging.log4j:log4j-api:2.8.1")
+      testCompile ("org.mockito:mockito-all:1.9.5")
+
+      javadoc("com.adaptris:adp-core-apt:$adpCoreVersion") { changing= true}
+  }
+
+  javadoc {
+    configure(options) {
+      links = [
+        interlokJavadocs,
+        interlokCommonJavadocs,
+      ]
+      taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+      options.addStringOption "tagletpath", configurations.javadoc.asPath
+    }
+  }
+
+  jacoco {
+    toolVersion="0.8.0"
+  }
+
+  jacocoTestReport {
+      reports {
+          xml.enabled true
+          html.enabled true
+      }
+  }
+
+  check.dependsOn jacocoTestReport
+
+  sourceSets {
+    main {
+      output.dir(versionDir, builtBy: 'generateVersion')
+    }
+  }
+
+  // Generate the META-INF/adaptris-version file
+  task generateVersion {
+    doLast {
+      def versionFile = new File(new File(versionDir, 'META-INF'), 'adaptris-version')
+      versionFile.getParentFile().mkdirs()
+      ant.propertyfile(file: versionFile) {
+        entry(key: 'component.name', value: componentName)
+        entry(key: 'build.version', value: releaseVersion)
+        entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
+      }
+    }
+  }
+
+}
