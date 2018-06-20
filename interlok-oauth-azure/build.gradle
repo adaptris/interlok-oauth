@@ -34,6 +34,9 @@ publishing {
             asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")
+            properties.appendNode("tags", "oauth,azure")
+            properties.appendNode("license", "false")
+            properties.appendNode("externalUrl", "https://github.com/AzureAD/azure-activedirectory-library-for-java")
           }
       }
   }

@@ -35,7 +35,9 @@ publishing {
             asNode().appendNode("description", "Retrieving OAUTH access tokens from Google Cloud")
             asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
             def properties = asNode().appendNode("properties")
+            properties.appendNode("license", "false")
             properties.appendNode("target", "3.6.5+")
+            properties.appendNode("tags", "oauth,google,gcloud")
           }
       }
   }
