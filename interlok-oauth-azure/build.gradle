@@ -1,0 +1,52 @@
+ext {
+  componentName='Interlok OAUTH/Azure'
+}
+
+dependencies {
+  compile "com.microsoft.azure:adal4j:1.2.0"
+  compile "net.minidev:json-smart:2.2.1"
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task examplesJar(type: Jar, dependsOn: test) {
+    classifier = 'examples'
+    from new File(buildDir, '/examples')
+}
+
+artifacts {
+    archives javadocJar
+    archives examplesJar
+}
+
+publishing {
+  publications {
+      mavenJava(MavenPublication) {
+          from components.java
+
+          artifact javadocJar { classifier "javadoc" }
+          artifact examplesJar { classifier "examples" }
+          pom.withXml {
+            asNode().appendNode("description", "Retrieving OAUTH access tokens from Azure")
+            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
+            def properties = asNode().appendNode("properties")
+            properties.appendNode("target", "3.6.5+")
+            properties.appendNode("tags", "oauth,azure")
+            properties.appendNode("license", "false")
+            properties.appendNode("externalUrl", "https://github.com/AzureAD/azure-activedirectory-library-for-java")
+          }
+      }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
+    }
+  }
+}
