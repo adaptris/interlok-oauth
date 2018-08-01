@@ -27,7 +27,7 @@ subprojects {
   apply plugin: 'maven-publish'
   apply plugin: "jacoco"
 
-  sourceCompatibility = 1.7
+  sourceCompatibility = 1.8
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
@@ -35,7 +35,7 @@ subprojects {
   // In this section you declare where to find the dependencies of your project
   repositories {
     jcenter()
-    maven {	url "$defaultNexusRepo" }
+    maven { url "$defaultNexusRepo" }
     maven { url "https://development.adaptris.net/nexus/content/groups/public" }
     maven {
       credentials {
