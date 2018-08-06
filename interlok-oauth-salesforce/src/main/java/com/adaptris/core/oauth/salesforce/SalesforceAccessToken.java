@@ -56,8 +56,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * It is perfectly possible to achieve the same thing with standard configuration; it would be a combination of
- * {@link AddMetadataService} + {@link CreateQueryStringFromMetadata} + ({@link StandardHttpProducer} || {@link ApacheHttpProducer})
- * + {@code JsonPathService} + {@link AddFormattedMetadataService}. This encapsulates all of that into a single class.
+ * {@code AddMetadataService} + {@code CreateQueryStringFromMetadata} + ({@code StandardHttpProducer} || {@code ApacheHttpProducer})
+ * + {@code JsonPathService} + {@code AddFormattedMetadataService}. This encapsulates all of that into a single class.
  * </p>
  * 
  * @config salesforce-access-token
