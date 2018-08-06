@@ -1,0 +1,52 @@
+ext {
+  componentName='Interlok OAUTH/Generic'
+}
+
+dependencies {
+  compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
+  compile ("com.jayway.jsonpath:json-path:2.4.0")
+  compile ("com.fasterxml.jackson.core:jackson-databind:2.9.6")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task examplesJar(type: Jar, dependsOn: test) {
+    classifier = 'examples'
+    from new File(buildDir, '/examples')
+}
+
+artifacts {
+    archives javadocJar
+    archives examplesJar
+}
+
+publishing {
+  publications {
+      mavenJava(MavenPublication) {
+          from components.java
+
+          artifact javadocJar { classifier "javadoc" }
+          artifact examplesJar { classifier "examples" }
+          pom.withXml {
+            asNode().appendNode("description", "Retrieving OAUTH access tokens in a configurable fashion")
+            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
+            def properties = asNode().appendNode("properties")
+            properties.appendNode("target", "3.8.1+")
+            properties.appendNode("license", "false")
+            properties.appendNode("tags", "oauth")
+          }
+      }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
+    }
+  }
+}
