@@ -62,7 +62,7 @@ subprojects {
   }
 
   configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    resolutionStrategy.cacheChangingModulesFor 300, 'seconds'
   }
 
   // In this section you declare the dependencies for your production and test code
@@ -71,6 +71,7 @@ subprojects {
       compile ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       compile ("org.slf4j:slf4j-api:$slf4jVersion")
 
+      annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true }
       testCompile ('junit:junit:4.12')
       testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
       testCompile ("org.apache.logging.log4j:log4j-core:2.8.1")

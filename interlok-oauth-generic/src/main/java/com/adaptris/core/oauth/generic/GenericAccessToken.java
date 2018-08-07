@@ -67,7 +67,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * It is perfectly possible to achieve the same thing with standard configuration; it would be a combination of
  * {@link AddMetadataService} + {@link CreateQueryStringFromMetadata} + ({@link StandardHttpProducer} || {@link ApacheHttpProducer})
  * + {@code JsonPathService} + {@link AddFormattedMetadataService}. This encapsulates all of that into a single class. If you have
- * encoded passwords in your metadata, consider using a {@link PasswordDecoderFilter} as part of a {@link CompositeMetadataFilter}.
+ * encoded passwords in your metadata, consider using a {@link PasswordDecodeMetadataFilter} as part of a
+ * {@link CompositeMetadataFilter}.
  * </p>
  * 
  * @config generic-oauth-access-token
