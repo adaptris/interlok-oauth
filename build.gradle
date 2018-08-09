@@ -70,6 +70,7 @@ subprojects {
       compile ("com.adaptris:interlok-core:$interlokCoreVersion") { changing= true}
       compile ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       compile ("org.slf4j:slf4j-api:$slf4jVersion")
+      annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
 
       testCompile ('junit:junit:4.12')
       testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
@@ -120,7 +121,7 @@ subprojects {
       ant.propertyfile(file: versionFile) {
         entry(key: 'component.name', value: componentName)
         entry(key: 'build.version', value: releaseVersion)
-        entry(key: 'groupId', value: "com.adaptris")
+        entry(key: 'groupId', value: project.group)
         entry(key: 'artifactId', value: project.name)
         entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
       }
