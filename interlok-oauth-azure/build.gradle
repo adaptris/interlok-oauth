@@ -30,12 +30,13 @@ publishing {
           artifact javadocJar { classifier "javadoc" }
           artifact examplesJar { classifier "examples" }
           pom.withXml {
+            asNode().appendNode("name", componentName)
             asNode().appendNode("description", "Retrieving OAUTH access tokens from Azure")
-            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
+            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html#oauth")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")
-            properties.appendNode("tags", "oauth,azure")
             properties.appendNode("license", "false")
+            properties.appendNode("tags", "oauth,azure")
             properties.appendNode("externalUrl", "https://github.com/AzureAD/azure-activedirectory-library-for-java")
           }
       }
