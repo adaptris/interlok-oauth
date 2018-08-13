@@ -56,6 +56,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Wraps the a URL Form based OAuth authentication flow.
  * <p>
+ * This class is designed for the situation where the OAUTH provider does not have a specific API that we can use. The sequence of
+ * events is :
+ * </p>
  * <ul>
  * <li>Filter the metadata to create a {@code UrlEncodedFormEntity}; the contents of the URL Form are determined solely by the
  * metadata-filter.</li>
@@ -196,7 +199,7 @@ public class GenericAccessToken implements AccessTokenBuilder {
   }
 
   public void setResponseHandler(OauthResponseHandler responseHandler) {
-    this.responseHandler = responseHandler;
+    this.responseHandler = Args.notNull(responseHandler, "responseHandler");
   }
 
   public GenericAccessToken withResponseHandler(OauthResponseHandler f) {

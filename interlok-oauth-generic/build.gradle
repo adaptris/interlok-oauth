@@ -31,6 +31,7 @@ publishing {
           artifact javadocJar { classifier "javadoc" }
           artifact examplesJar { classifier "examples" }
           pom.withXml {
+            asNode().appendNode("name", componentName)
             asNode().appendNode("description", "Retrieving OAUTH access tokens an OAUTH server which doesn't have an explicit API")
             asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
             def properties = asNode().appendNode("properties")
