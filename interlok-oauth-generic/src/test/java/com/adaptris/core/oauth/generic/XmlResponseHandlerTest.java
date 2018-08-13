@@ -16,9 +16,9 @@
 
 package com.adaptris.core.oauth.generic;
 
-import static com.adaptris.core.oauth.generic.JsonResponseHandler.ACCESS_TOKEN_PATH;
-import static com.adaptris.core.oauth.generic.JsonResponseHandler.EXPIRES_PATH;
-import static com.adaptris.core.oauth.generic.JsonResponseHandler.TOKEN_TYPE_PATH;
+import static com.adaptris.core.oauth.generic.XmlResponseHandler.ACCESS_TOKEN_PATH;
+import static com.adaptris.core.oauth.generic.XmlResponseHandler.EXPIRES_PATH;
+import static com.adaptris.core.oauth.generic.XmlResponseHandler.TOKEN_TYPE_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -38,12 +38,13 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class JsonResponseHandlerTest {
+public class XmlResponseHandlerTest {
 
-  public static final String ACCESS_TOKEN_WITH_TYPE = "{\"access_token\" : \"token\", \"token_type\" : \"Bearer\"}";
-  public static final String ACCESS_TOKEN_WITH_TYPE_DATE = "{\"access_token\" : \"token\", \"token_type\" : \"Bearer\", \"expires_in\" : \"2018-01-01\"}";
-  public static final String ACCESS_TOKEN = "{\"access_token\" : \"token\"}";
-  public static final String DUFF_JSON = "{\"blahblah\" : \"token\"}";
+  public static final String ACCESS_TOKEN_WITH_TYPE = "<root><access_token>token</access_token><token_type>Bearer</token_type></root>";
+  public static final String ACCESS_TOKEN_WITH_TYPE_DATE = "<root><access_token>token</access_token><token_type>Bearer</token_type><expires_in>2018-01-01</expires_in></root>";
+
+  public static final String ACCESS_TOKEN = "<root><access_token>token</access_token></root>";
+  public static final String DUFF_XML = "<root></root>";
 
   @Before
   public void setUp() throws Exception {
@@ -57,7 +58,7 @@ public class JsonResponseHandlerTest {
     HttpEntity mockEntity = mock(HttpEntity.class);
     when(response.getEntity()).thenReturn(mockEntity);
     when(mockEntity.getContent()).thenThrow(new IOException());
-    JsonResponseHandler worker = new JsonResponseHandler();
+    XmlResponseHandler worker = new XmlResponseHandler().withNamespaceContext(null).withXmlDocumentFactoryConfig(null);
     try {
       LifecycleHelper.initAndStart(worker);
       AccessToken token = worker.buildToken(response);
@@ -66,6 +67,7 @@ public class JsonResponseHandlerTest {
     } finally {
       LifecycleHelper.stopAndClose(worker);
     }
+
   }
 
   @Test
@@ -76,15 +78,17 @@ public class JsonResponseHandlerTest {
     when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE, (Charset) null));
     when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE, (Charset) null));
 
-    JsonResponseHandler worker = new JsonResponseHandler().withExpiresPath(EXPIRES_PATH).withTokenPath(ACCESS_TOKEN_PATH)
+    XmlResponseHandler worker = new XmlResponseHandler().withExpiresPath(EXPIRES_PATH).withTokenPath(ACCESS_TOKEN_PATH)
         .withTokenTypePath(TOKEN_TYPE_PATH);
     try {
       AccessToken token = worker.buildToken(response);
+
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
     } finally {
       LifecycleHelper.stopAndClose(worker);
     }
+
   }
 
   @Test
@@ -95,7 +99,7 @@ public class JsonResponseHandlerTest {
     when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE_DATE, (Charset) null));
     when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE_DATE, (Charset) null));
 
-    JsonResponseHandler worker = new JsonResponseHandler();
+    XmlResponseHandler worker = new XmlResponseHandler();
     try {
       AccessToken token = worker.buildToken(response);
       assertEquals("token", token.getToken());
@@ -104,6 +108,7 @@ public class JsonResponseHandlerTest {
     } finally {
       LifecycleHelper.stopAndClose(worker);
     }
+
   }
 
   @Test
@@ -114,7 +119,7 @@ public class JsonResponseHandlerTest {
     when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN, (Charset) null));
     when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN, (Charset) null));
 
-    JsonResponseHandler worker = new JsonResponseHandler();
+    XmlResponseHandler worker = new XmlResponseHandler();
     try {
       AccessToken token = worker.buildToken(response);
       assertEquals("token", token.getToken());
@@ -122,25 +127,24 @@ public class JsonResponseHandlerTest {
     } finally {
       LifecycleHelper.stopAndClose(worker);
     }
+
   }
 
   @Test
-  public void testBuildToken_BadJson() throws Exception {
+  public void testBuildToken_BadXml() throws Exception {
     HttpResponse response = mock(HttpResponse.class);
     HttpEntity mockEntity = mock(HttpEntity.class);
     when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(DUFF_JSON, (Charset) null));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(DUFF_JSON, (Charset) null));
+    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(DUFF_XML, (Charset) null));
+    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(DUFF_XML, (Charset) null));
+    XmlResponseHandler worker = new XmlResponseHandler();
 
-    JsonResponseHandler worker = new JsonResponseHandler();
     try {
       AccessToken token = worker.buildToken(response);
       fail();
     } catch (CoreException expected) {
-
     } finally {
       LifecycleHelper.stopAndClose(worker);
-
     }
 
   }

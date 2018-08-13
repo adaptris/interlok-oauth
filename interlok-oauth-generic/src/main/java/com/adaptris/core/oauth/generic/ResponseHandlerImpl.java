@@ -15,6 +15,8 @@
 */
 package com.adaptris.core.oauth.generic;
 
+import com.adaptris.core.CoreException;
+
 public abstract class ResponseHandlerImpl implements OauthResponseHandler {
 
   private String expiresPath;
@@ -76,4 +78,23 @@ public abstract class ResponseHandlerImpl implements OauthResponseHandler {
     return (T) this;
   }
 
+  @Override
+  public void init() throws CoreException {
+    // override as required.
+  }
+
+  @Override
+  public void start() throws CoreException {
+    // override as required.
+  }
+
+  @Override
+  public void stop() {
+    // override as required.
+  }
+
+  @Override
+  public void close() {
+    // override as required.
+  }
 }

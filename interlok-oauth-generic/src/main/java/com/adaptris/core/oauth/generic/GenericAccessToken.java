@@ -51,6 +51,7 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.CreateQueryStringFromMetadata;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -111,6 +112,7 @@ public class GenericAccessToken implements AccessTokenBuilder {
     try {
       Args.notBlank(getTokenUrl(), "tokenUrl");
       Args.notNull(getResponseHandler(), "responseHandler");
+      LifecycleHelper.init(getResponseHandler());
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -118,14 +120,17 @@ public class GenericAccessToken implements AccessTokenBuilder {
 
   @Override
   public void start() throws CoreException {
+    LifecycleHelper.start(getResponseHandler());
   }
 
   @Override
   public void stop() {
+    LifecycleHelper.stop(getResponseHandler());
   }
 
   @Override
   public void close() {
+    LifecycleHelper.close(getResponseHandler());
   }
 
   @Override

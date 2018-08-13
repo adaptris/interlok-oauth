@@ -17,10 +17,11 @@ package com.adaptris.core.oauth.generic;
 
 import org.apache.http.HttpResponse;
 
+import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 
-public interface OauthResponseHandler {
+public interface OauthResponseHandler extends ComponentLifecycle {
 
   AccessToken buildToken(HttpResponse loginResponse) throws CoreException;
 
