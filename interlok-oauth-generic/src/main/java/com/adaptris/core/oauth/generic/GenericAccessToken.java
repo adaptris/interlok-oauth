@@ -38,17 +38,11 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.http.apache.ApacheHttpProducer;
 import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
-import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
-import com.adaptris.core.metadata.CompositeMetadataFilter;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.services.metadata.AddFormattedMetadataService;
-import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.CreateQueryStringFromMetadata;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -69,10 +63,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * It is perfectly possible to achieve the same thing with standard configuration; it would be a combination of
- * {@link AddMetadataService} + {@link CreateQueryStringFromMetadata} + ({@link StandardHttpProducer} || {@link ApacheHttpProducer})
- * + {@code JsonPathService} + {@link AddFormattedMetadataService}. This encapsulates all of that into a single class. If you have
- * encoded passwords in your metadata, consider using a {@link PasswordDecodeMetadataFilter} as part of a
- * {@link CompositeMetadataFilter}.
+ * {@link com.adaptris.core.services.metadata.AddMetadataService} +
+ * {@link com.adaptris.core.services.metadata.CreateQueryStringFromMetadata} +
+ * ({@link com.adaptris.core.http.client.net.StandardHttpProducer} || {@code ApacheHttpProducer}) + {@code JsonPathService} +
+ * {@link com.adaptris.core.services.metadata.AddFormattedMetadataService}. This encapsulates all of that into a single class. If
+ * you have encoded passwords in your metadata, consider using a {@link com.adaptris.core.metadata.PasswordDecodeMetadataFilter} as
+ * part of a {@link com.adaptris.core.metadata.CompositeMetadataFilter}.
  * </p>
  * 
  * @config generic-oauth-access-token

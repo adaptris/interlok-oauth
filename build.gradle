@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 ext {
   interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.8-SNAPSHOT'
   releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.8-SNAPSHOT'
@@ -9,6 +11,16 @@ ext {
   interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
   interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   slf4jVersion = '1.7.25'
+}
+
+ext.hasGraphViz = { ->
+  def app = "dot"
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    app = app + ".exe"
+  }
+  return System.getenv("PATH").split(File.pathSeparator).any{
+    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
+  }
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -50,6 +62,7 @@ subprojects {
 
   configurations {
     javadoc {}
+    umlDoclet {}
     all*.exclude group: 'c3p0'
     all*.exclude group: 'commons-logging'
     all*.exclude group: 'javamail'
@@ -82,6 +95,8 @@ subprojects {
       testCompile ("org.mockito:mockito-all:1.10.19")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
+      umlDoclet("nl.talsmasoftware:umldoclet:1.0.18")
+
   }
 
   javadoc {
@@ -127,6 +142,43 @@ subprojects {
     }
   }
 
+  task umlJavadoc(type: Javadoc) {
+    group 'Documentation'
+    description 'Build javadocs using plantuml + graphviz + umldoclet, if dot is available'
+
+    onlyIf {
+      hasGraphViz()
+    }
+    source = sourceSets.main.allJava
+    classpath = project.sourceSets.main.compileClasspath
+    configure(options) {
+        links = [
+          interlokJavadocs,
+          interlokCommonJavadocs,
+        ]
+      taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+      options.addStringOption "tagletpath", configurations.javadoc.asPath
+      options.docletpath = configurations.umlDoclet.files.asType(List)
+      options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
+      options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
+      options.addStringOption "umlImageFormat", "SVG"
+      options.addStringOption "umlExcludedReferences", "java.lang.Exception,java.lang.Object,java.lang.Enum"
+      options.addStringOption "umlIncludePrivateClasses","false"
+      options.addStringOption "umlIncludePackagePrivateClasses","false"
+      options.addStringOption "umlIncludeProtectedClasses","false"
+      options.addStringOption "umlIncludeAbstractSuperclassMethods","false"
+      options.addStringOption "umlIncludeConstructors","false"
+      options.addStringOption "umlIncludePublicFields","false"
+      options.addStringOption "umlIncludePackagePrivateFields","false"
+      options.addStringOption "umlIncludeProtectedFields", "false"
+      options.addStringOption "umlIncludeDeprecatedClasses", "false"
+      options.addStringOption "umlIncludePrivateInnerClasses", "false"
+      options.addStringOption "umlIncludePackagePrivateInnerClasses", "false"
+      options.addStringOption "umlIncludeProtectedInnerClasses","false"
+    }
+  }
+
   check.dependsOn jacocoTestReport
+  javadoc.dependsOn umlJavadoc
 
 }

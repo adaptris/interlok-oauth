@@ -15,8 +15,8 @@
 */
 /**
  * <p>
- * Authenticate against the Salesforce OAUTH Provider.
+ * Authenticate against the Azure OAUTH Provider.
  * </p>
  * <img alt="UML" src="package.svg"/>
  */
-package com.adaptris.core.oauth.salesforce;
+package com.adaptris.core.oauth.azure;
