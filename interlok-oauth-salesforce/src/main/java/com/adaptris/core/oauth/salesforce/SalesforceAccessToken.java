@@ -32,13 +32,9 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.http.oauth.GetOauthToken;
-import com.adaptris.core.services.metadata.AddFormattedMetadataService;
-import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.CreateQueryStringFromMetadata;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
@@ -56,8 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * It is perfectly possible to achieve the same thing with standard configuration; it would be a combination of
- * {@link AddMetadataService} + {@link CreateQueryStringFromMetadata} + ({@link StandardHttpProducer} || {@link ApacheHttpProducer})
- * + {@code JsonPathService} + {@link AddFormattedMetadataService}. This encapsulates all of that into a single class.
+ * {@code AddMetadataService} + {@code CreateQueryStringFromMetadata} + ({@code StandardHttpProducer} || {@code ApacheHttpProducer})
+ * + {@code JsonPathService} + {@code AddFormattedMetadataService}. This encapsulates all of that into a single class.
  * </p>
  * 
  * @config salesforce-access-token
