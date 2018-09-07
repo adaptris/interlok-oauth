@@ -3,7 +3,7 @@ ext {
 }
 
 dependencies {
-  compile "com.google.auth:google-auth-library-oauth2-http:0.10.0"
+  compile "com.google.auth:google-auth-library-oauth2-http:0.11.0"
   compile "com.google.guava:guava:26.0-jre"
   compile "org.apache.httpcomponents:httpclient:4.5.6"
   compile "com.fasterxml.jackson.core:jackson-core:2.9.6"
