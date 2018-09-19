@@ -5,7 +5,7 @@ ext {
 dependencies {
   compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
   compile ("com.jayway.jsonpath:json-path:2.4.0")
-  compile ("com.fasterxml.jackson.core:jackson-databind:2.9.6")
+  compile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
