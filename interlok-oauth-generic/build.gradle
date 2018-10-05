@@ -1,10 +1,11 @@
 ext {
-  componentName='Interlok OAUTH/Azure'
+  componentName='Interlok OAUTH/Generic'
 }
 
 dependencies {
-  compile "com.microsoft.azure:adal4j:1.6.2"
-  compile "net.minidev:json-smart:2.3"
+  compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
+  compile ("com.jayway.jsonpath:json-path:2.4.0")
+  compile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -31,13 +32,12 @@ publishing {
           artifact examplesJar { classifier "examples" }
           pom.withXml {
             asNode().appendNode("name", componentName)
-            asNode().appendNode("description", "Retrieving OAUTH access tokens from Azure")
-            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html#oauth")
+            asNode().appendNode("description", "Retrieving OAUTH access tokens an OAUTH server which doesn't have an explicit API")
+            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
             def properties = asNode().appendNode("properties")
-            properties.appendNode("target", "3.6.5+")
+            properties.appendNode("target", "3.8.1+")
             properties.appendNode("license", "false")
-            properties.appendNode("tags", "oauth,azure")
-            properties.appendNode("externalUrl", "https://github.com/AzureAD/azure-activedirectory-library-for-java")
+            properties.appendNode("tags", "oauth")
           }
       }
   }

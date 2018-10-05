@@ -4,7 +4,7 @@ ext {
 
 dependencies {
   compile "org.apache.httpcomponents:httpclient:4.5.6"
-  compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+  compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

@@ -13,10 +13,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-/**
- * <p>
- * Authenticate against the Salesforce OAUTH Provider.
- * </p>
- * <img alt="UML" src="package.svg"/>
- */
-package com.adaptris.core.oauth.salesforce;
+package com.adaptris.core.oauth.generic;
+
+import org.apache.http.HttpResponse;
+
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.http.oauth.AccessToken;
+
+public interface OauthResponseHandler extends ComponentLifecycle {
+
+  AccessToken buildToken(HttpResponse loginResponse) throws CoreException;
+
+}

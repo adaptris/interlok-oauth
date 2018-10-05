@@ -17,23 +17,27 @@
 package com.adaptris.core.oauth.gcloud;
 
 
+import java.io.IOException;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
+import com.adaptris.core.util.LifecycleHelper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
 
 @XStreamAlias("google-cloud-access-token-builder")
 public class GoogleCloudAccessTokenBuilder implements AccessTokenBuilder {
 
   @NotNull
   @Valid
+  @AutoPopulated
   private Credentials credentials;
 
   public GoogleCloudAccessTokenBuilder(){
@@ -57,22 +61,22 @@ public class GoogleCloudAccessTokenBuilder implements AccessTokenBuilder {
 
   @Override
   public void init() throws CoreException {
-    getCredentials().init();
+    LifecycleHelper.init(getCredentials());
   }
 
   @Override
   public void start() throws CoreException {
-    getCredentials().start();
+    LifecycleHelper.start(getCredentials());
   }
 
   @Override
   public void stop() {
-    getCredentials().stop();
+    LifecycleHelper.stop(getCredentials());
   }
 
   @Override
   public void close() {
-    getCredentials().close();
+    LifecycleHelper.close(getCredentials());
   }
 
   public Credentials getCredentials() {
