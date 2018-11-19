@@ -88,7 +88,7 @@ subprojects {
       testCompile ("org.mockito:mockito-all:1.10.19")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      umlDoclet("nl.talsmasoftware:umldoclet:1.1.1")
+      umlDoclet("nl.talsmasoftware:umldoclet:1.1.2")
 
   }
 
