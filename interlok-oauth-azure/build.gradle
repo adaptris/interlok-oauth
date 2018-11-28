@@ -17,9 +17,15 @@ task examplesJar(type: Jar, dependsOn: test) {
     from new File(buildDir, '/examples')
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
 artifacts {
-    archives javadocJar
-    archives examplesJar
+  archives javadocJar
+  archives examplesJar
+  archives sourcesJar
 }
 
 publishing {
@@ -29,6 +35,7 @@ publishing {
 
           artifact javadocJar { classifier "javadoc" }
           artifact examplesJar { classifier "examples" }
+          artifact sourcesJar { classifier "sources" }
           pom.withXml {
             asNode().appendNode("name", componentName)
             asNode().appendNode("description", "Retrieving OAUTH access tokens from Azure")
