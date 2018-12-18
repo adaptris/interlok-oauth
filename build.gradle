@@ -14,7 +14,7 @@ ext {
   interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
   interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   slf4jVersion = '1.7.25'
-  jacksonVersion = '2.9.6'
+  jacksonVersion = '2.9.8'
   log4j2Version = '2.8.1'
 }
 
