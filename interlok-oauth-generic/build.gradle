@@ -1,12 +1,13 @@
 ext {
   componentName='Interlok OAUTH/Generic'
-}
+ }
 
 dependencies {
   compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
   compile ("com.jayway.jsonpath:json-path:2.4.0")
   compile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-}
+  testCompile ("io.undertow:undertow-core:2.0.17.Final")
+ }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
@@ -46,7 +47,7 @@ publishing {
           artifact sourcesJar { classifier "sources" }
           pom.withXml {
             asNode().appendNode("name", componentName)
-            asNode().appendNode("description", "Retrieving OAUTH access tokens an OAUTH server which doesn't have an explicit API")
+            asNode().appendNode("description", "Handling OAUTH where the provider does not have an explicit API")
             asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.8.1+")
