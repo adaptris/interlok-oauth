@@ -16,7 +16,7 @@ ext {
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.25'
   jacksonVersion = '2.9.8'
-  log4j2Version = '2.8.1'
+  log4j2Version = '2.11.2'
 }
 
 ext.hasGraphViz = { ->
