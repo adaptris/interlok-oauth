@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(
     since = "3.8.4",
     summary = "Build an RFC5849 OAUTH Authorization header and store it as metadata",
-    tag = "oauth,oauthv1,http.https")
+    tag = "oauth,oauthv1,http,https")
 @DisplayOrder(
     order = {"httpMethod", "url", "authorizationData", "targetMetadataKey"})
 public class GenerateRfc5849Header extends ServiceImp {

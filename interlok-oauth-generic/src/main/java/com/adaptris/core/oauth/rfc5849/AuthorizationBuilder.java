@@ -17,6 +17,7 @@ import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.wrap;
+
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,13 +26,20 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.apache.commons.lang3.StringUtils;
+
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod;
 import com.adaptris.core.util.Args;
 
 /**
  * Build the Authorization header.
- * 
+ * <p>
+ * This is responsible for building the actual string that forms the {@code Authorization} header. It is not designed to be directly
+ * configurable; you would configure {@link AuthorizationData} instead and use {@link AuthorizationData#builder(AdaptrisMessage)} to
+ * get access to an instance of this class.
+ * </p>
  */
 public class AuthorizationBuilder {
 
@@ -84,20 +92,17 @@ public class AuthorizationBuilder {
     Args.notNull(getSignatureMethod(), "signatureMethod");
     Args.notNull(getUrl(), "url");
     String timestamp = String.valueOf(Instant.now().getEpochSecond());
-    String signature = Base64.getEncoder().encodeToString(signatureMethod.digest(signingKey(),
-        buildStringToSign(getMethod(), getUrl(), oauthParams(timestamp))));
+    String signature = Base64.getEncoder()
+        .encodeToString(signatureMethod.digest(signingKey(), buildStringToSign(getMethod(), getUrl(), oauthParams(timestamp))));
     Map<String, String> authParams = filter(new HashMap<String, String>() {
       {
         putAll(oauthParams(timestamp));
-        put(OAUTH_SIGNATURE,
-            URLEncoder.encode(signature, StandardCharsets.UTF_8.toString()));
+        put(OAUTH_SIGNATURE, URLEncoder.encode(signature, StandardCharsets.UTF_8.toString()));
         put(REALM, getRealm());
       }
     });
-    return authParams.keySet().stream().map(key -> keyValueWrapped(key, authParams.get(key)))
-        .collect(joining(COMMA, "OAuth ", ""));
+    return authParams.keySet().stream().map(key -> keyValueWrapped(key, authParams.get(key))).collect(joining(COMMA, "OAuth ", ""));
   }
-
 
   private Map<String, String> oauthParams(String timestamp) {
     Map<String, String> authParams = filter(new HashMap<String, String>() {
@@ -124,7 +129,6 @@ public class AuthorizationBuilder {
     }
     return params;
   }
-
 
   // From section 3.4.1 of RFC 5849
   // The signature base string is a consistent, reproducible concatenation
@@ -154,8 +158,7 @@ public class AuthorizationBuilder {
 
   // We use a TreeMap so it's sorted; in the RFC the resulting base string appears
   // to be sorted lexically...
-  private static String buildStringToSign(String httpMethod, URL url, Map<String, String> params)
-      throws Exception {
+  private static String buildStringToSign(String httpMethod, URL url, Map<String, String> params) throws Exception {
     Map<String, String> requestParams = new TreeMap<String, String>(CASE_INSENSITIVE_ORDER) {
       {
         putAll(params);
@@ -167,12 +170,10 @@ public class AuthorizationBuilder {
         requestParams.put(p[0], p[1]);
       }
     }
-    String paramString =
-        requestParams.keySet().stream().map(key -> keyAndValue(key, requestParams.get(key)))
+    String paramString = requestParams.keySet().stream().map(key -> keyAndValue(key, requestParams.get(key)))
         .collect(joining(AMPERSAND));
     return httpMethod.toUpperCase() + AMPERSAND
-        + URLEncoder.encode(
-            new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString(),
+        + URLEncoder.encode(new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString(),
             StandardCharsets.UTF_8.toString())
         + AMPERSAND + URLEncoder.encode(paramString.toString(), StandardCharsets.UTF_8.toString());
   }
@@ -191,7 +192,6 @@ public class AuthorizationBuilder {
   private static final String keyAndValue(String key, String value) {
     return key + EQUALS + value;
   }
-
 
   public URL getUrl() {
     return url;
@@ -218,7 +218,6 @@ public class AuthorizationBuilder {
     setMethod(s);
     return this;
   }
-
 
   public String getConsumerKey() {
     return consumerKey;
@@ -259,7 +258,6 @@ public class AuthorizationBuilder {
     return this;
   }
 
-
   private String getTokenSecret() {
     return tokenSecret;
   }
@@ -299,7 +297,6 @@ public class AuthorizationBuilder {
     return this;
   }
 
-
   private String getVersion() {
     return version;
   }
@@ -307,7 +304,6 @@ public class AuthorizationBuilder {
   private void setVersion(String s) {
     version = StringUtils.defaultIfBlank(s, "1.0");
   }
-
 
   public AuthorizationBuilder withVersion(String s) {
     setVersion(s);

@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("oauth-apache-http-rfc5849-authenticator")
 @ComponentProfile(since = "3.8.4",
     summary = "Build an OAUTH Authorization header based on RFC5849",
-    tag = "oauth,oauthv1,http.https")
+    tag = "oauth,oauthv1,http,https")
 public class ApacheRfc5849Authenticator implements ApacheRequestAuthenticator {
 
   @NotNull
@@ -91,6 +91,11 @@ public class ApacheRfc5849Authenticator implements ApacheRequestAuthenticator {
   }
 
 
+  /**
+   * Specify the settings that will be used to build the header.
+   * 
+   * @param data the {@link AuthorizationData}
+   */
   public void setAuthorizationData(AuthorizationData data) {
     authorizationData = Args.notNull(data, "authorizationData");
   }

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
@@ -38,8 +39,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config oauth-rfc5849-authorization-data
  */
 @XStreamAlias("oauth-rfc5849-authorization-data")
-@DisplayOrder(order = {"accessToken", "tokenSecret", "consumerKey", "consumerSecret",
-    "signatureMethod", "nonce", "realm", "version"})
+@DisplayOrder(order =
+{
+    "accessToken", "tokenSecret", "consumerKey", "consumerSecret", "signatureMethod", "nonce", "realm", "version"
+})
+@ComponentProfile(since = "3.8.4", summary = "Captures authorization data for building the RFC5849 Authorization header", tag = "oauth,oauthv1,http,https")
 public class AuthorizationData {
   /**
    * Maps to {@code oauth_signature_method}
