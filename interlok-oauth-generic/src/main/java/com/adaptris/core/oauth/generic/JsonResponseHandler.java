@@ -20,6 +20,7 @@ import java.util.EnumSet;
 
 import org.apache.http.HttpResponse;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.ExceptionHelper;
@@ -43,6 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config oauth-json-response
  */
 @XStreamAlias("oauth-json-response")
+@ComponentProfile(since = "3.8.1", summary = "Handle an OAUTH JSON response.", tag = "oauth,http,https")
 public class JsonResponseHandler extends ResponseHandlerImpl {
   /**
    * Default JSON Path to the TokenType - {@value #TOKEN_TYPE_PATH}
