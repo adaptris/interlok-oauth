@@ -134,8 +134,8 @@ public class AuthorizationData {
   @NotBlank
   private String tokenSecret;
   @InputFieldHint(expression = true,
-  style = "com.adaptris.core.http.apache.oauth.AuthorizationData.SignatureMethod")
-  @InputFieldDefault(value = "HMAC-SHA1")
+  style = "com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod")
+  @InputFieldDefault(value = "HMAC_SHA1")
   private String signatureMethod;
   @InputFieldHint(expression = true)
   @AdvancedConfig
