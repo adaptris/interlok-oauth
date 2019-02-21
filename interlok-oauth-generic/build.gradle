@@ -17,12 +17,25 @@ task examplesJar(type: Jar, dependsOn: test) {
     classifier = 'examples'
     from new File(buildDir, '/examples')
 }
-
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
 artifacts {
     archives javadocJar
     archives examplesJar
+    archives sourcesJar
 }
-
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+              "Build-Jdk": System.getProperty('java.version'),
+              "Implementation-Title": componentName,
+              "Implementation-Version": project.version,
+              "Implementation-Vendor-Id": project.group,
+              "Implementation-Vendor": organizationName)
+  }
+}
 publishing {
   publications {
       mavenJava(MavenPublication) {
@@ -30,6 +43,7 @@ publishing {
 
           artifact javadocJar { classifier "javadoc" }
           artifact examplesJar { classifier "examples" }
+          artifact sourcesJar { classifier "sources" }
           pom.withXml {
             asNode().appendNode("name", componentName)
             asNode().appendNode("description", "Retrieving OAUTH access tokens an OAUTH server which doesn't have an explicit API")
