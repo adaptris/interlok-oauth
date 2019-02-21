@@ -1,5 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+plugins {
+  id 'com.github.spotbugs' version '1.6.10' apply false
+}
+
 ext {
   interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.8-SNAPSHOT'
   releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.8-SNAPSHOT'
@@ -41,8 +45,7 @@ task clean(type: Delete) {
   delete project.buildDir
 }
 
-subprojects {
-  // Apply the java plugin to add support for Java
+subprojects { 
   apply plugin: 'java'
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
