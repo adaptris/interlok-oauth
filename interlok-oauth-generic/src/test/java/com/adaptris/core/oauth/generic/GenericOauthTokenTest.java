@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -113,8 +114,8 @@ public class GenericOauthTokenTest extends ServiceCase {
       CloseableHttpResponse response = mock(CloseableHttpResponse.class);
       HttpEntity mockEntity = mock(HttpEntity.class);
       when(response.getEntity()).thenReturn(mockEntity);
-      when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(responseContent));
-      when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(responseContent));
+      when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(responseContent, Charset.defaultCharset()));
+      when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(responseContent,Charset.defaultCharset()));
       CloseableHttpClient client = mock(CloseableHttpClient.class);
       if (hasError) {
         when(client.execute((HttpUriRequest) anyObject())).thenThrow(new IOException());
