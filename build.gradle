@@ -19,9 +19,9 @@ ext {
   interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '1.7.25'
+  slf4jVersion = '1.7.26'
   jacksonVersion = '2.9.8'
-  log4j2Version = '2.8.1'
+  log4j2Version = '2.11.2'
 }
 
 ext.hasGraphViz = { ->
