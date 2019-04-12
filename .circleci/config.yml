@@ -28,9 +28,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - dependencies{{ checksum "build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
-            - dependencies
+            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
+            - dependencies-{{ .Environment.CIRCLE_JOB}}
+            - dependencies-
 
       # run tests!
       - run:
@@ -57,7 +57,57 @@ jobs:
           paths:
             - ~/.gradle/caches
             - ~/.gradle/wrapper
-          key: dependencies{{ checksum "build.gradle" }}
+          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
+
+  publish:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/project
+
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - run:
+          name: Configure
+          command: |
+            mkdir -p ~/.gradle
+            echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            sudo sed -i.bak -e "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" -e "s/securerandom.strongAlgorithms=NativePRNGBlocking/securerandom.strongAlgorithms=NativePRNG/g" /etc/java-8-openjdk/security/java.security
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
+            - dependencies-{{ .Environment.CIRCLE_JOB}}
+            - dependencies-
+
+      # run tests!
+      - run:
+          name: Run Tests
+          command: |
+            chmod +x ./gradlew
+            ./gradlew -PverboseTests=true test publish
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/test-results
+
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
 
   buildjava11:
     docker:
@@ -82,7 +132,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - dependencies{{ checksum "build.gradle" }}
+            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
+            - dependencies-{{ .Environment.CIRCLE_JOB}}
+            - dependencies-
 
       # run tests!
       - run:
@@ -105,7 +157,7 @@ jobs:
           paths:
             - ~/.gradle/caches
             - ~/.gradle/wrapper
-          key: dependencies{{ checksum "build.gradle" }}
+          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
 
 workflows:
   version: 2
@@ -113,14 +165,18 @@ workflows:
     jobs:
       - build
       - buildjava11
+      - publish:
+          context: nexus-publish
 
   nightly:
     triggers:
       - schedule:
-          cron: "15 01 * * *"
+          cron: "00 06 * * *"
           filters:
             branches:
               only:
                 - develop
     jobs:
       - build
+      - publish:
+          context: nexus-publish
