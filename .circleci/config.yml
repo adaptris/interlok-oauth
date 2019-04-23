@@ -178,6 +178,5 @@ workflows:
               only:
                 - develop
     jobs:
-      - build
       - publish:
           context: nexus-publish
