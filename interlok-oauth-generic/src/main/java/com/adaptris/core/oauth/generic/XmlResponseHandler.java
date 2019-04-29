@@ -26,6 +26,7 @@ import org.apache.http.HttpResponse;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -47,6 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config oauth-json-response
  */
 @XStreamAlias("oauth-xml-response")
+@ComponentProfile(since = "3.8.1", summary = "Handle an OAUTH XML response.", tag = "oauth,http,https")
 public class XmlResponseHandler extends ResponseHandlerImpl {
   /**
    * Default XPath to the TokenType - {@value #TOKEN_TYPE_PATH}

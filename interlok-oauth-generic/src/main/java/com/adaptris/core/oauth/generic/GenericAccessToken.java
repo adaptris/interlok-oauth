@@ -78,7 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "tokenUrl", "responseHandler", "metadataFilter", "clientConfig"
 })
-@ComponentProfile(since = "3.8.1")
+@ComponentProfile(since = "3.8.1", summary = "Get a bearer token based on a URL Form based OAuth authentication flow.", tag = "oauth,http,https")
 @XStreamAlias("generic-oauth-access-token")
 public class GenericAccessToken implements AccessTokenBuilder {
 
@@ -93,6 +93,7 @@ public class GenericAccessToken implements AccessTokenBuilder {
   @NotNull
   @Valid
   @AutoPopulated
+  @InputFieldDefault (value = "json based responses")
   private OauthResponseHandler responseHandler;
   @Valid
   @AdvancedConfig
