@@ -46,7 +46,7 @@ task clean(type: Delete) {
   delete project.buildDir
 }
 
-subprojects { 
+subprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
@@ -62,8 +62,7 @@ subprojects {
     mavenCentral()
     maven { url "$defaultNexusRepo" }
     maven { url "$nexusBaseUrl/content/groups/public" }
-    maven { url "$nexusBaseUrl/content/repositories/snapshots" }
-    maven { url "$nexusBaseUrl/content/repositories/releases" }
+    maven { url "$nexusBaseUrl/content/groups/interlok" }
   }
 
   configurations {
