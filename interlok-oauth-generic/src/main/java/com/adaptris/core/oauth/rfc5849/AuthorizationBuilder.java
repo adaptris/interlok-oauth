@@ -17,7 +17,6 @@ import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.wrap;
-
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -26,9 +25,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod;
 import com.adaptris.core.util.Args;
@@ -75,6 +72,8 @@ public class AuthorizationBuilder {
     setRealm("");
     setVersion("1.0");
     setVerifier("");
+    setAccessToken("");
+    setTokenSecret("");
     setSignatureMethod(SignatureMethod.HMAC_SHA1);
   }
 
@@ -85,15 +84,14 @@ public class AuthorizationBuilder {
   public String build() throws Exception {
     Args.notBlank(getConsumerKey(), "consumerKey");
     Args.notBlank(getConsumerSecret(), "consumerSecret");
-    Args.notBlank(getAccessToken(), "accessToken");
-    Args.notBlank(getTokenSecret(), "tokenSecret");
     Args.notBlank(getNonce(), "nonce");
     Args.notBlank(getMethod(), "method");
     Args.notNull(getSignatureMethod(), "signatureMethod");
     Args.notNull(getUrl(), "url");
     String timestamp = String.valueOf(Instant.now().getEpochSecond());
     String signature = Base64.getEncoder()
-        .encodeToString(signatureMethod.digest(signingKey(), buildStringToSign(getMethod(), getUrl(), oauthParams(timestamp))));
+        .encodeToString(getSignatureMethod().digest(signingKey(),
+            buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)))));
     Map<String, String> authParams = filter(new HashMap<String, String>() {
       {
         putAll(oauthParams(timestamp));
@@ -108,7 +106,7 @@ public class AuthorizationBuilder {
     Map<String, String> authParams = filter(new HashMap<String, String>() {
       {
         put(OAUTH_CONSUMER_KEY, getConsumerKey());
-        put(OAUTH_SIGNATURE_METHOD, signatureMethod.formalName());
+        put(OAUTH_SIGNATURE_METHOD, getSignatureMethod().formalName());
         put(OAUTH_TIMESTAMP, timestamp);
         put(OAUTH_VERSION, getVersion());
         put(OAUTH_NONCE, getNonce());
@@ -120,7 +118,10 @@ public class AuthorizationBuilder {
   }
 
   private String signingKey() {
-    return consumerSecret + AMPERSAND + tokenSecret;
+    if (StringUtils.isBlank(getTokenSecret())) {
+      return getConsumerSecret();
+    }
+    return getConsumerSecret() + AMPERSAND + getTokenSecret();
   }
 
   private Map<String, String> filter(Map<String, String> params) {
@@ -206,7 +207,7 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getMethod() {
+  private String getMethod() {
     return method;
   }
 
@@ -219,7 +220,7 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getConsumerKey() {
+  private String getConsumerKey() {
     return consumerKey;
   }
 
@@ -232,7 +233,7 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getConsumerSecret() {
+  private String getConsumerSecret() {
     return consumerSecret;
   }
 
@@ -245,12 +246,12 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getAccessToken() {
+  private String getAccessToken() {
     return accessToken;
   }
 
   private void setAccessToken(String s) {
-    accessToken = Args.notBlank(s, "accessToken");
+    accessToken = s;
   }
 
   public AuthorizationBuilder withAccessToken(String s) {
@@ -263,7 +264,7 @@ public class AuthorizationBuilder {
   }
 
   private void setTokenSecret(String s) {
-    tokenSecret = Args.notBlank(s, "tokenSecret");
+    tokenSecret = s;
   }
 
   public AuthorizationBuilder withTokenSecret(String s) {

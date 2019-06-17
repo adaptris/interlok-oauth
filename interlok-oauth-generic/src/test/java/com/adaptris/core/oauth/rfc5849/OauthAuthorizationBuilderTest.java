@@ -26,8 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.oauth.rfc5849.AuthorizationData;
-import com.adaptris.core.oauth.rfc5849.AuthorizationBuilder;
 import com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod;
 
 public class OauthAuthorizationBuilderTest {
@@ -84,6 +82,23 @@ public class OauthAuthorizationBuilderTest {
     assertEquals("\"\"", params.get("oauth_verifier"));
   }
 
+  @Test
+  public void testBuild_NoAccessToken() throws Exception {
+    AuthorizationData data = new AuthorizationData();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    data.setConsumerKey("consumerKey");
+    data.setConsumerSecret("consumerSecret");
+    AuthorizationBuilder builder = data.builder("POST", new URL("http://localhost"), msg);
+    String authString = builder.build();
+    assertNotNull(authString);
+    assertTrue(authString.startsWith("OAuth"));
+    System.out.println(authString);
+    Map<String, String> params = unsplitAuthorization(authString.replace("OAuth ", ""));
+    assertEquals(StringUtils.wrap("consumerKey", '"'), params.get("oauth_consumer_key"));
+    assertEquals(StringUtils.wrap("1.0", '"'), params.get("oauth_version"));
+    assertNotNull(params.get("oauth_timestamp"));
+    assertNotNull(params.get("oauth_signature"));
+  }
 
   private static Map<String, String> unsplitAuthorization(String auth) {
     return Arrays.stream(auth.split(",")).map(s -> s.split("=")).collect(Collectors.toMap(

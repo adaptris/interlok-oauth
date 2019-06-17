@@ -132,10 +132,8 @@ public class AuthorizationData {
   @NotBlank
   private String consumerSecret;
   @InputFieldHint(expression = true)
-  @NotBlank
   private String accessToken;
   @InputFieldHint(expression = true, external = true, style = "PASSWORD")
-  @NotBlank
   private String tokenSecret;
   @InputFieldHint(expression = true,
   style = "com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod")
@@ -143,6 +141,7 @@ public class AuthorizationData {
   private String signatureMethod;
   @InputFieldHint(expression = true)
   @AdvancedConfig
+  @InputFieldDefault(value = "generated from the message unique-id")
   private String nonce;
   @InputFieldHint(expression = true)
   @AdvancedConfig
