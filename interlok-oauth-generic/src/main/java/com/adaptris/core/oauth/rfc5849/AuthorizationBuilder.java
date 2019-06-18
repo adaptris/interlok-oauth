@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod;
 import com.adaptris.core.util.Args;
@@ -67,6 +69,7 @@ public class AuthorizationBuilder {
   private transient String verifier;
   private transient boolean includeEmptyParams;
   private transient SignatureMethod signatureMethod;
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public AuthorizationBuilder() {
     setRealm("");
@@ -89,9 +92,10 @@ public class AuthorizationBuilder {
     Args.notNull(getSignatureMethod(), "signatureMethod");
     Args.notNull(getUrl(), "url");
     String timestamp = String.valueOf(Instant.now().getEpochSecond());
-    String signature = Base64.getEncoder()
-        .encodeToString(getSignatureMethod().digest(signingKey(),
-            buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)))));
+    String stringToSign = buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)));
+    log.trace("Signing string [{}]", stringToSign);
+    String signature =
+        Base64.getEncoder().encodeToString(getSignatureMethod().digest(signingKey(), stringToSign));
     Map<String, String> authParams = filter(new HashMap<String, String>() {
       {
         putAll(oauthParams(timestamp));
@@ -117,11 +121,9 @@ public class AuthorizationBuilder {
     return authParams;
   }
 
+  // 3.4.2. HMAC-SHA1 -> says the & must always be present, so we can just default to "" if null
   private String signingKey() {
-    if (StringUtils.isBlank(getTokenSecret())) {
-      return getConsumerSecret();
-    }
-    return getConsumerSecret() + AMPERSAND + getTokenSecret();
+    return getConsumerSecret() + AMPERSAND + StringUtils.defaultIfEmpty(getTokenSecret(), "");
   }
 
   private Map<String, String> filter(Map<String, String> params) {
