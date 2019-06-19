@@ -25,6 +25,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,8 @@ public class AuthorizationBuilder {
   private transient String verifier;
   private transient boolean includeEmptyParams;
   private transient SignatureMethod signatureMethod;
+  private transient Map<String, String> additionalData;
+
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public AuthorizationBuilder() {
@@ -78,6 +81,7 @@ public class AuthorizationBuilder {
     setAccessToken("");
     setTokenSecret("");
     setSignatureMethod(SignatureMethod.HMAC_SHA1);
+    setAdditionalData(new HashMap<>());
   }
 
   /**
@@ -92,8 +96,10 @@ public class AuthorizationBuilder {
     Args.notNull(getSignatureMethod(), "signatureMethod");
     Args.notNull(getUrl(), "url");
     String timestamp = String.valueOf(Instant.now().getEpochSecond());
-    String stringToSign = buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)));
+    String stringToSign = buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)),
+        getAdditionalData());
     log.trace("Signing string [{}]", stringToSign);
+    System.err.println("Signing string [" + stringToSign + "]");
     String signature =
         Base64.getEncoder().encodeToString(getSignatureMethod().digest(signingKey(), stringToSign));
     Map<String, String> authParams = filter(new HashMap<String, String>() {
@@ -161,10 +167,12 @@ public class AuthorizationBuilder {
 
   // We use a TreeMap so it's sorted; in the RFC the resulting base string appears
   // to be sorted lexically...
-  private static String buildStringToSign(String httpMethod, URL url, Map<String, String> params) throws Exception {
+  private static String buildStringToSign(String httpMethod, URL url, Map<String, String> params,
+      Map<String, String> additionalData) throws Exception {
     Map<String, String> requestParams = new TreeMap<String, String>(CASE_INSENSITIVE_ORDER) {
       {
         putAll(params);
+        putAll(additionalData);
       }
     };
     if (url.getQuery() != null) {
@@ -349,6 +357,19 @@ public class AuthorizationBuilder {
 
   public AuthorizationBuilder withVerifier(String s) {
     setVerifier(s);
+    return this;
+  }
+
+  private Map<String, String> getAdditionalData() {
+    return additionalData;
+  }
+
+  private void setAdditionalData(Map<String, String> data) {
+    this.additionalData = ObjectUtils.defaultIfNull(data, new HashMap<>());
+  }
+
+  public AuthorizationBuilder withAdditionalData(Map<String, String> data) {
+    setAdditionalData(data);
     return this;
   }
 }

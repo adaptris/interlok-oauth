@@ -13,9 +13,14 @@
  */
 package com.adaptris.core.oauth.rfc5849;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
@@ -27,10 +32,13 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.apache.ApacheRequestAuthenticator;
+import com.adaptris.core.metadata.MetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -71,6 +79,9 @@ public class GenerateRfc5849Header extends ServiceImp {
   @Valid
   @AutoPopulated
   private AuthorizationData authorizationData;
+  @AdvancedConfig
+  @InputFieldDefault(value = "no additional data")
+  private MetadataFilter additionalData;
 
   public GenerateRfc5849Header() {
     setHttpMethod("POST");
@@ -79,9 +90,12 @@ public class GenerateRfc5849Header extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    try {
+    try {     
+      Map<String, String> additional = urlEncodeValues(additionalDataFilter().filter(msg));
       AuthorizationBuilder builder =
-          getAuthorizationData().builder(msg.resolve(getHttpMethod()), new URL(msg.resolve(getUrl())), msg);
+          getAuthorizationData()
+              .builder(msg.resolve(getHttpMethod()), new URL(msg.resolve(getUrl())), msg)
+              .withAdditionalData(additional);
       msg.addMessageHeader(targetMetadataKey(), builder.build());
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -161,5 +175,51 @@ public class GenerateRfc5849Header extends ServiceImp {
    */
   public void setAuthorizationData(AuthorizationData data) {
     authorizationData = Args.notNull(data, "authorizationData");
+  }
+
+  public MetadataFilter getAdditionalData() {
+    return additionalData;
+  }
+
+  public void setAdditionalData(MetadataFilter filter) {
+    this.additionalData = filter;
+  }
+
+  private MetadataFilter additionalDataFilter() {
+    return ObjectUtils.defaultIfNull(getAdditionalData(), new RemoveAllMetadataFilter());
+  }
+
+  private static Map<String, String> urlEncodeValues(MetadataCollection collection)
+      throws UnsupportedEncodingException {
+    Map<String, String> map = MetadataCollection.asMap(collection);
+    for (Map.Entry<String, String> entry : map.entrySet() ) {
+      entry.setValue(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.name()));
+    }
+    return map;
+  }
+
+  public GenerateRfc5849Header withAuthorizationData(AuthorizationData data) {
+    setAuthorizationData(data);
+    return this;
+  }
+
+  public GenerateRfc5849Header withTargetMetadataKey(String s) {
+    setTargetMetadataKey(s);
+    return this;
+  }
+
+  public GenerateRfc5849Header withAdditionalData(MetadataFilter filter) {
+    setAdditionalData(filter);
+    return this;
+  }
+
+  public GenerateRfc5849Header withUrl(String s) {
+    setUrl(s);
+    return this;
+  }
+
+  public GenerateRfc5849Header withMethod(String s) {
+    setHttpMethod(s);
+    return this;
   }
 }
