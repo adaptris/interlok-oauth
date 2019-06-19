@@ -51,8 +51,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link ApacheRequestAuthenticator} but since generation of the header does not rely on external
  * connectivity, we can generate the header offline and store it as metadata.
  * </p>
+ * <p>
+ * If the payload is going to be {@code application/x-www-url-form-encoded} then the request body
+ * also needs to be included in the signature base string. You would specify a filter that gives you
+ * the parameters; and subsequently use a
+ * {@link com.adaptris.core.services.metadata.FormDataFromMetadata} to generate the payload.
+ * </p>
  *
  * @config oauth-rfc5849-header-service
+ * @see com.adaptris.core.services.metadata.FormDataFromMetadata
  */
 @XStreamAlias("oauth-rfc5849-header-service")
 @ComponentProfile(
@@ -181,6 +188,17 @@ public class GenerateRfc5849Header extends ServiceImp {
     return additionalData;
   }
 
+  /**
+   * Set any additional data that needs to be used for the base signature string.
+   * <p>
+   * If the payload is going to be {@code application/x-www-url-form-encoded} then the request body
+   * also needs to be included in the signature base string. You would specify a filter that gives
+   * you the parameters; and subsequently use a
+   * {@link com.adaptris.core.services.metadata.FormDataFromMetadata} to generate the payload.
+   * </p>
+   * 
+   * @param filter a filter on metadata.
+   */
   public void setAdditionalData(MetadataFilter filter) {
     this.additionalData = filter;
   }
