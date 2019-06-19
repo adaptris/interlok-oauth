@@ -21,7 +21,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.oauth.rfc5849.GenerateRfc5849Header;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class OauthAuthorizationServiceTest extends ServiceCase {
@@ -43,9 +43,8 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
 
   @Test
   public void testService_Exception() throws Exception {
-    GenerateRfc5849Header service = new GenerateRfc5849Header();
-    service.setHttpMethod("POST");
-    service.setUrl("http://localhost");
+    GenerateRfc5849Header service =
+        new GenerateRfc5849Header().withMethod("POST").withUrl("http://localhost");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     try {
       ServiceCase.execute(service, msg);
@@ -56,9 +55,8 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
 
   @Test
   public void testService() throws Exception {
-    GenerateRfc5849Header service = new GenerateRfc5849Header();
-    service.setHttpMethod("POST");
-    service.setUrl("http://localhost");
+    GenerateRfc5849Header service =
+        new GenerateRfc5849Header().withMethod("POST").withUrl("http://localhost");
     AuthorizationDataTest.configure(service.getAuthorizationData());
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     ServiceCase.execute(service, msg);
@@ -69,16 +67,28 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
 
   @Test
   public void testService_TargetMetadataKey() throws Exception {
-    GenerateRfc5849Header service = new GenerateRfc5849Header();
-    service.setHttpMethod("POST");
-    service.setUrl("http://localhost");
-    service.setTargetMetadataKey("X-Authorization");
-    AuthorizationDataTest.configure(service.getAuthorizationData());
+    GenerateRfc5849Header service =
+        new GenerateRfc5849Header().withMethod("POST").withUrl("http://localhost")
+            .withTargetMetadataKey("X-Authorization")
+            .withAuthorizationData(AuthorizationDataTest.configure(new AuthorizationData()));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     ServiceCase.execute(service, msg);
     assertNull(msg.getMetadataValue("Authorization"));
     assertNotNull(msg.getMetadataValue("X-Authorization"));
     assertTrue(msg.getMetadataValue("X-Authorization").startsWith("OAuth"));
+  }
+
+  @Test
+  public void testService_AdditionalData() throws Exception {
+    GenerateRfc5849Header service =
+        new GenerateRfc5849Header().withMethod("POST").withUrl("http://localhost")
+            .withAdditionalData(new NoOpMetadataFilter());
+    AuthorizationDataTest.configure(service.getAuthorizationData());
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
+    msg.addMetadata("Hello", "World");
+    ServiceCase.execute(service, msg);
+    assertNotNull(msg.getMetadataValue("Authorization"));
+    assertTrue(msg.getMetadataValue("Authorization").startsWith("OAuth"));
   }
 
 
