@@ -17,7 +17,6 @@ import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.wrap;
-
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -26,9 +25,10 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.oauth.rfc5849.AuthorizationData.SignatureMethod;
 import com.adaptris.core.util.Args;
@@ -70,12 +70,18 @@ public class AuthorizationBuilder {
   private transient String verifier;
   private transient boolean includeEmptyParams;
   private transient SignatureMethod signatureMethod;
+  private transient Map<String, String> additionalData;
+
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public AuthorizationBuilder() {
     setRealm("");
     setVersion("1.0");
     setVerifier("");
+    setAccessToken("");
+    setTokenSecret("");
     setSignatureMethod(SignatureMethod.HMAC_SHA1);
+    setAdditionalData(new HashMap<>());
   }
 
   /**
@@ -85,15 +91,17 @@ public class AuthorizationBuilder {
   public String build() throws Exception {
     Args.notBlank(getConsumerKey(), "consumerKey");
     Args.notBlank(getConsumerSecret(), "consumerSecret");
-    Args.notBlank(getAccessToken(), "accessToken");
-    Args.notBlank(getTokenSecret(), "tokenSecret");
     Args.notBlank(getNonce(), "nonce");
     Args.notBlank(getMethod(), "method");
     Args.notNull(getSignatureMethod(), "signatureMethod");
     Args.notNull(getUrl(), "url");
     String timestamp = String.valueOf(Instant.now().getEpochSecond());
-    String signature = Base64.getEncoder()
-        .encodeToString(signatureMethod.digest(signingKey(), buildStringToSign(getMethod(), getUrl(), oauthParams(timestamp))));
+    String stringToSign = buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)),
+        getAdditionalData());
+    log.trace("Signing string [{}]", stringToSign);
+    System.err.println("Signing string [" + stringToSign + "]");
+    String signature =
+        Base64.getEncoder().encodeToString(getSignatureMethod().digest(signingKey(), stringToSign));
     Map<String, String> authParams = filter(new HashMap<String, String>() {
       {
         putAll(oauthParams(timestamp));
@@ -108,7 +116,7 @@ public class AuthorizationBuilder {
     Map<String, String> authParams = filter(new HashMap<String, String>() {
       {
         put(OAUTH_CONSUMER_KEY, getConsumerKey());
-        put(OAUTH_SIGNATURE_METHOD, signatureMethod.formalName());
+        put(OAUTH_SIGNATURE_METHOD, getSignatureMethod().formalName());
         put(OAUTH_TIMESTAMP, timestamp);
         put(OAUTH_VERSION, getVersion());
         put(OAUTH_NONCE, getNonce());
@@ -119,8 +127,9 @@ public class AuthorizationBuilder {
     return authParams;
   }
 
+  // 3.4.2. HMAC-SHA1 -> says the & must always be present, so we can just default to "" if null
   private String signingKey() {
-    return consumerSecret + AMPERSAND + tokenSecret;
+    return getConsumerSecret() + AMPERSAND + StringUtils.defaultIfEmpty(getTokenSecret(), "");
   }
 
   private Map<String, String> filter(Map<String, String> params) {
@@ -158,10 +167,12 @@ public class AuthorizationBuilder {
 
   // We use a TreeMap so it's sorted; in the RFC the resulting base string appears
   // to be sorted lexically...
-  private static String buildStringToSign(String httpMethod, URL url, Map<String, String> params) throws Exception {
+  private static String buildStringToSign(String httpMethod, URL url, Map<String, String> params,
+      Map<String, String> additionalData) throws Exception {
     Map<String, String> requestParams = new TreeMap<String, String>(CASE_INSENSITIVE_ORDER) {
       {
         putAll(params);
+        putAll(additionalData);
       }
     };
     if (url.getQuery() != null) {
@@ -206,7 +217,7 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getMethod() {
+  private String getMethod() {
     return method;
   }
 
@@ -219,7 +230,7 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getConsumerKey() {
+  private String getConsumerKey() {
     return consumerKey;
   }
 
@@ -232,7 +243,7 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getConsumerSecret() {
+  private String getConsumerSecret() {
     return consumerSecret;
   }
 
@@ -245,12 +256,12 @@ public class AuthorizationBuilder {
     return this;
   }
 
-  public String getAccessToken() {
+  private String getAccessToken() {
     return accessToken;
   }
 
   private void setAccessToken(String s) {
-    accessToken = Args.notBlank(s, "accessToken");
+    accessToken = s;
   }
 
   public AuthorizationBuilder withAccessToken(String s) {
@@ -263,7 +274,7 @@ public class AuthorizationBuilder {
   }
 
   private void setTokenSecret(String s) {
-    tokenSecret = Args.notBlank(s, "tokenSecret");
+    tokenSecret = s;
   }
 
   public AuthorizationBuilder withTokenSecret(String s) {
@@ -346,6 +357,19 @@ public class AuthorizationBuilder {
 
   public AuthorizationBuilder withVerifier(String s) {
     setVerifier(s);
+    return this;
+  }
+
+  private Map<String, String> getAdditionalData() {
+    return additionalData;
+  }
+
+  private void setAdditionalData(Map<String, String> data) {
+    this.additionalData = ObjectUtils.defaultIfNull(data, new HashMap<>());
+  }
+
+  public AuthorizationBuilder withAdditionalData(Map<String, String> data) {
+    setAdditionalData(data);
     return this;
   }
 }

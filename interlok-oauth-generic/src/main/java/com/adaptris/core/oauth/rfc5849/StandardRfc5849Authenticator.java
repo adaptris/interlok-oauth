@@ -43,6 +43,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link HttpURLConnectionAuthenticator} implementation for you to add as the
  * {@link HttpRequestService#setAuthenticator(HttpAuthenticator)} or similar.
  * </p>
+ * <p>
+ * Note that since this will not have access to payload; this particular implementation does not
+ * support the using the payload as part of the signature base string when the {@code Content-Type}
+ * is {@code application/x-www-form-urlencoded}. If that is the case then use a
+ * {@link GenerateRfc5849Header} with a metadata filter to pre-build an authorisation header.
+ * </p>
  * 
  * @config oauth-rfc5849-authenticator
  */
