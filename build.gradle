@@ -21,6 +21,7 @@ ext {
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.26'
   jacksonVersion = '2.9.9'
+  jacksonDatabindVersion = '2.9.9.1'
   log4j2Version = '2.12.0'
 }
 
