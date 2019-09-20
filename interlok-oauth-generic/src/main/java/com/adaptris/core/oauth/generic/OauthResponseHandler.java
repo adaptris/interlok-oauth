@@ -15,14 +15,13 @@
 */
 package com.adaptris.core.oauth.generic;
 
-import org.apache.http.HttpResponse;
-
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 
+@FunctionalInterface
 public interface OauthResponseHandler extends ComponentLifecycle {
 
-  AccessToken buildToken(HttpResponse loginResponse) throws CoreException;
+  AccessToken buildToken(String loginResponse) throws CoreException;
 
 }

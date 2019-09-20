@@ -16,15 +16,12 @@
 package com.adaptris.core.oauth.generic;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.io.InputStream;
-
+import java.io.StringReader;
+import java.nio.charset.Charset;
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
-
-import org.apache.http.HttpResponse;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
@@ -86,13 +83,13 @@ public class XmlResponseHandler extends ResponseHandlerImpl {
   public void init() throws CoreException {
     super.init();
     nsCtx = SimpleNamespaceContext.create(getNamespaceContext());
-    factoryBuilder = DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), nsCtx);
+    factoryBuilder = DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), nsCtx);
   }
 
   @Override
-  public AccessToken buildToken(HttpResponse loginResponse) throws CoreException {
+  public AccessToken buildToken(String loginResponse) throws CoreException {
     XPath xpath = XPath.newXPathInstance(factoryBuilder, nsCtx);
-    try (InputStream in = loginResponse.getEntity().getContent()) {
+    try (ReaderInputStream in = new ReaderInputStream(new StringReader(loginResponse), Charset.defaultCharset())) {
       Document xml = XmlHelper.createDocument(in, factoryBuilder);
 
       String accessToken = xpath.selectSingleTextItem(xml, getAccessTokenPath());

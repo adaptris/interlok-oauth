@@ -15,11 +15,7 @@
 */
 package com.adaptris.core.oauth.generic;
 
-import java.io.InputStream;
 import java.util.EnumSet;
-
-import org.apache.http.HttpResponse;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
@@ -74,9 +70,9 @@ public class JsonResponseHandler extends ResponseHandlerImpl {
   }
 
   @Override
-  public AccessToken buildToken(HttpResponse loginResponse) throws CoreException {
-    try (InputStream in = loginResponse.getEntity().getContent()) {
-      ReadContext ctx = JsonPath.parse(in, jsonConfig);
+  public AccessToken buildToken(String loginResponse) throws CoreException {
+    try {
+      ReadContext ctx = JsonPath.parse(loginResponse, jsonConfig);
       // Will throw a PathNotFound, which is probably correct, if we can't find a token, it's all bad.
       String accessToken = ctx.read(getAccessTokenPath()).toString();
       AccessToken token = new AccessToken(accessToken);     

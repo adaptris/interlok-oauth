@@ -16,20 +16,27 @@
 
 package com.adaptris.core.oauth.generic;
 
+import java.io.IOException;
 import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.message.BasicStatusLine;
+import org.apache.http.util.EntityUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -81,6 +88,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(since = "3.8.1", summary = "Get a bearer token based on a URL Form based OAuth authentication flow.", tag = "oauth,http,https")
 @XStreamAlias("generic-oauth-access-token")
 public class GenericAccessToken implements AccessTokenBuilder {
+  private static final StatusLine DEFAULT_STATUS = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
+
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @NotBlank
   @InputFieldHint(expression = true)
@@ -146,13 +156,22 @@ public class GenericAccessToken implements AccessTokenBuilder {
   }
 
   private AccessToken login(String url, HttpEntity entity) throws Exception {
+    String responseBody = "";
+    String httpStatusLine = "";
+
     try (CloseableHttpClient httpclient = HttpClientBuilderConfigurator.defaultIfNull(getClientConfig())
         .configure(HttpClients.custom())
         .build()) {
       HttpPost post = new HttpPost(url);
       post.setEntity(entity);
-      HttpResponse loginResponse = httpclient.execute(post);
-      return getResponseHandler().buildToken(loginResponse);
+      CustomResponseHandler responseHandler = new CustomResponseHandler();
+      responseBody = httpclient.execute(post, responseHandler);
+      httpStatusLine = responseHandler.statusLine();
+      responseHandler.throwExceptionIfAny();
+      return getResponseHandler().buildToken(responseBody);
+    } catch (Exception e) {
+      log.error("Failed to authenticate, got [{}], HTTP Reply data was : [{}]", httpStatusLine, responseBody);
+      throw e;
     }
   }
 
@@ -225,5 +244,27 @@ public class GenericAccessToken implements AccessTokenBuilder {
   public GenericAccessToken withClientConfig(HttpClientBuilderConfigurator f) {
     setClientConfig(f);
     return this;
+  }
+
+
+  protected static class CustomResponseHandler implements ResponseHandler<String> {
+
+    private StatusLine statusLine = DEFAULT_STATUS;
+
+    @Override
+    public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+      statusLine = response.getStatusLine();
+      return EntityUtils.toString(response.getEntity());
+    }
+
+    protected String statusLine() {
+      return statusLine.toString();
+    }
+
+    protected void throwExceptionIfAny() throws HttpResponseException {
+      if (statusLine.getStatusCode() >= 300) {
+        throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
+      }
+    }
   }
 }
