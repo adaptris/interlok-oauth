@@ -17,11 +17,11 @@ package com.adaptris.core.oauth.rfc5849;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

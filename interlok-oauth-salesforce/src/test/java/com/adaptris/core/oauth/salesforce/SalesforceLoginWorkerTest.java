@@ -18,25 +18,27 @@ package com.adaptris.core.oauth.salesforce;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 
+@SuppressWarnings("deprecation")
 public class SalesforceLoginWorkerTest {
 
   private static final String ACCESS_TOKEN_WITH_TYPE = "{\"access_token\" : \"token\", \"token_type\" : \"Bearer\"}";
@@ -58,15 +60,12 @@ public class SalesforceLoginWorkerTest {
   @Test
   public void testLogin() throws Exception {
     
-    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
     HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
     final CloseableHttpClient client = mock(CloseableHttpClient.class);
-    when(client.execute((HttpUriRequest) anyObject())).thenReturn(response);
+    when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject())).thenReturn(ACCESS_TOKEN_WITH_TYPE);
     
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128") {
+      @Override
       CloseableHttpClient createClient() {
         return client;
       }
@@ -79,15 +78,13 @@ public class SalesforceLoginWorkerTest {
   @Test
   public void testLogin_Error() throws Exception {
 
-    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
     HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
     final CloseableHttpClient client = mock(CloseableHttpClient.class);
-    when(client.execute((HttpUriRequest) anyObject())).thenThrow(new IOException());
+    when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject()))
+        .thenThrow(new HttpResponseException(400, "Bad Request"));
 
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128") {
+      @Override
       CloseableHttpClient createClient() {
         return client;
       }
@@ -102,16 +99,32 @@ public class SalesforceLoginWorkerTest {
   }
 
   @Test
+  public void testLogin_ErrorResponse() throws Exception {
+
+    HttpEntity mockEntity = mock(HttpEntity.class);
+    final CloseableHttpClient client = mock(CloseableHttpClient.class);
+    when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject())).thenReturn(DUFF_JSON);
+
+
+    SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128") {
+      @Override
+      CloseableHttpClient createClient() {
+        return client;
+      }
+    };
+    try {
+      AccessToken token = worker.login(mockEntity);
+      fail();
+    } catch (CoreException expected) {
+
+    }
+  }
+
+
+  @Test
   public void testBuildToken_WithType() throws Exception {
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128");
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
-
-    AccessToken token = worker.buildToken(response);
-
+    AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_TYPE);
     assertEquals("token", token.getToken());
     assertEquals("Bearer", token.getType());
   }
@@ -119,14 +132,7 @@ public class SalesforceLoginWorkerTest {
   @Test
   public void testBuildToken_NoType() throws Exception {
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128");
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN));
-
-    AccessToken token = worker.buildToken(response);
-
+    AccessToken token = worker.buildToken(ACCESS_TOKEN);
     assertEquals("token", token.getToken());
     assertEquals("Bearer", token.getType());
   }
@@ -134,19 +140,47 @@ public class SalesforceLoginWorkerTest {
   @Test
   public void testBuildToken_BadJson() throws Exception {
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128");
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(DUFF_JSON));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(DUFF_JSON));
-
     try {
-      AccessToken token = worker.buildToken(response);
+      AccessToken token = worker.buildToken(DUFF_JSON);
       fail();
     }
     catch (NullPointerException expected) {
       
     }
+  }
+
+
+  @Test
+  public void testCustomResponseHandler() throws Exception {
+    BasicStatusLine status = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "OK");
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    HttpEntity mockEntity = mock(HttpEntity.class);
+    when(response.getEntity()).thenReturn(mockEntity);
+    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
+    when(response.getStatusLine()).thenReturn(status);
+
+
+    SalesforceLoginWorker.CustomResponseHandler handler = new SalesforceLoginWorker.CustomResponseHandler();
+    assertEquals(ACCESS_TOKEN_WITH_TYPE, handler.handleResponse(response));
+    assertNotNull(handler.statusLine());
+    assertTrue(handler.statusLine().contains("HTTP/1.1"));
+    handler.throwExceptionIfAny();
+  }
+
+  @Test(expected = HttpResponseException.class)
+  public void testCustomResponseHandler_NotFound() throws Exception {
+    BasicStatusLine status = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NOT_FOUND, "Not Found");
+    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+    HttpEntity mockEntity = mock(HttpEntity.class);
+    when(response.getEntity()).thenReturn(mockEntity);
+    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE));
+    when(response.getStatusLine()).thenReturn(status);
+
+    SalesforceLoginWorker.CustomResponseHandler handler = new SalesforceLoginWorker.CustomResponseHandler();
+    assertEquals(ACCESS_TOKEN_WITH_TYPE, handler.handleResponse(response));
+    assertNotNull(handler.statusLine());
+    assertTrue(handler.statusLine().contains("HTTP/1.1"));
+    handler.throwExceptionIfAny();
   }
 
 }

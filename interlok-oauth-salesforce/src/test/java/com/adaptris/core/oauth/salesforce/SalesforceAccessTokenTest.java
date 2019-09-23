@@ -17,16 +17,15 @@
 package com.adaptris.core.oauth.salesforce;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import org.apache.http.HttpEntity;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
@@ -164,9 +163,20 @@ public class SalesforceAccessTokenTest {
   }
 
   @Test
+  public void testCreateWorker() {
+    SalesforceAccessToken tokenBuilder = new SalesforceAccessToken();
+    tokenBuilder.setUsername("test");
+    tokenBuilder.setPassword("test");
+    tokenBuilder.setConsumerKey("test");
+    tokenBuilder.setConsumerSecret("test");
+    assertNotNull(tokenBuilder.createWorker());
+  }
+
+  @Test
   public void testBuildToken() throws Exception {
     final SalesforceLoginWorker worker = mock(SalesforceLoginWorker.class);
     SalesforceAccessToken tokenBuilder = new SalesforceAccessToken() {
+      @Override
       SalesforceLoginWorker createWorker() {
         return worker;
       }
@@ -190,6 +200,7 @@ public class SalesforceAccessTokenTest {
   public void testBuildToken_PasswordException() throws Exception {
     final SalesforceLoginWorker worker = mock(SalesforceLoginWorker.class);
     SalesforceAccessToken tokenBuilder = new SalesforceAccessToken() {
+      @Override
       SalesforceLoginWorker createWorker() {
         return worker;
       }
