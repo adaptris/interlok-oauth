@@ -99,7 +99,6 @@ public class AuthorizationBuilder {
     String stringToSign = buildStringToSign(getMethod(), getUrl(), filter(oauthParams(timestamp)),
         getAdditionalData());
     log.trace("Signing string [{}]", stringToSign);
-    System.err.println("Signing string [" + stringToSign + "]");
     String signature =
         Base64.getEncoder().encodeToString(getSignatureMethod().digest(signingKey(), stringToSign));
     Map<String, String> authParams = filter(new HashMap<String, String>() {
