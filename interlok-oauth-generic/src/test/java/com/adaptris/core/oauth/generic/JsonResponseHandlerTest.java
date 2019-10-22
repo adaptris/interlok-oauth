@@ -21,19 +21,8 @@ import static com.adaptris.core.oauth.generic.JsonResponseHandler.EXPIRES_PATH;
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.TOKEN_TYPE_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.LifecycleHelper;
@@ -51,35 +40,11 @@ public class JsonResponseHandlerTest {
   }
 
   @Test
-  public void testBuildToken_Error() throws Exception {
-
-    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenThrow(new IOException());
-    JsonResponseHandler worker = new JsonResponseHandler();
-    try {
-      LifecycleHelper.initAndStart(worker);
-      AccessToken token = worker.buildToken(response);
-      fail();
-    } catch (CoreException expected) {
-    } finally {
-      LifecycleHelper.stopAndClose(worker);
-    }
-  }
-
-  @Test
   public void testBuildToken_WithType() throws Exception {
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE, (Charset) null));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE, (Charset) null));
-
     JsonResponseHandler worker = new JsonResponseHandler().withExpiresPath(EXPIRES_PATH).withTokenPath(ACCESS_TOKEN_PATH)
         .withTokenTypePath(TOKEN_TYPE_PATH);
     try {
-      AccessToken token = worker.buildToken(response);
+      AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_TYPE);
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
     } finally {
@@ -89,15 +54,9 @@ public class JsonResponseHandlerTest {
 
   @Test
   public void testBuildToken_WithType_AndExpiry() throws Exception {
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE_DATE, (Charset) null));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN_WITH_TYPE_DATE, (Charset) null));
-
     JsonResponseHandler worker = new JsonResponseHandler();
     try {
-      AccessToken token = worker.buildToken(response);
+      AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_TYPE_DATE);
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
       assertEquals("2018-01-01", token.getExpiry());
@@ -108,15 +67,9 @@ public class JsonResponseHandlerTest {
 
   @Test
   public void testBuildToken_NoType() throws Exception {
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN, (Charset) null));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(ACCESS_TOKEN, (Charset) null));
-
     JsonResponseHandler worker = new JsonResponseHandler();
     try {
-      AccessToken token = worker.buildToken(response);
+      AccessToken token = worker.buildToken(ACCESS_TOKEN);
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
     } finally {
@@ -126,15 +79,9 @@ public class JsonResponseHandlerTest {
 
   @Test
   public void testBuildToken_BadJson() throws Exception {
-    HttpResponse response = mock(HttpResponse.class);
-    HttpEntity mockEntity = mock(HttpEntity.class);
-    when(response.getEntity()).thenReturn(mockEntity);
-    when(mockEntity.getContent()).thenReturn(IOUtils.toInputStream(DUFF_JSON, (Charset) null));
-    when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(DUFF_JSON, (Charset) null));
-
     JsonResponseHandler worker = new JsonResponseHandler();
     try {
-      AccessToken token = worker.buildToken(response);
+      AccessToken token = worker.buildToken(DUFF_JSON);
       fail();
     } catch (CoreException expected) {
 

@@ -20,13 +20,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -239,7 +238,7 @@ public class SalesforceAccessToken implements AccessTokenBuilder {
   }
 
   String tokenUrl() {
-    return getTokenUrl() != null ? getTokenUrl() : DEFAULT_TOKEN_URL;
+    return ObjectUtils.defaultIfNull(getTokenUrl(), DEFAULT_TOKEN_URL);
   }
 
 }
