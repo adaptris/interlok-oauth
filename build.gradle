@@ -109,7 +109,7 @@ subprojects {
       compile ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       compile ("org.slf4j:slf4j-api:$slf4jVersion")
       annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      testCompile ('junit:junit:4.12')
+      testCompile ('junit:junit:4.13')
       testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
       testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
       testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
