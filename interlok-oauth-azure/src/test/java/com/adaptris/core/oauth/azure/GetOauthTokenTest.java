@@ -18,7 +18,6 @@ package com.adaptris.core.oauth.azure;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.http.oauth.GetOauthToken;
@@ -48,8 +47,9 @@ public class GetOauthTokenTest extends ServiceCase {
     protected abstract AccessTokenBuilder build();
 
   }
-  public GetOauthTokenTest(String s) {
-    super(s);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

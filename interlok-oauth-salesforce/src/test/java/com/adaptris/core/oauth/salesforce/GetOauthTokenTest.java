@@ -21,10 +21,10 @@ import com.adaptris.core.http.oauth.GetOauthToken;
 
 public class GetOauthTokenTest extends ServiceCase {
 
-  public GetOauthTokenTest(String s) {
-    super(s);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Override
   protected Object retrieveObjectForSampleConfig() {
     GetOauthToken service = new GetOauthToken();

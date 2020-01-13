@@ -15,6 +15,10 @@
  */
 package com.adaptris.core.oauth.rfc5849;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
@@ -24,7 +28,10 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.client.net.HttpRequestService;
 
 public class StandardRfc5849AuthorizationTest extends ServiceCase {
-
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Test
   public void testAuthorization_Exception() throws Exception {
     HttpRequestService service =

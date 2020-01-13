@@ -15,6 +15,10 @@
  */
 package com.adaptris.core.oauth.rfc5849;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -25,7 +29,10 @@ import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class OauthAuthorizationServiceTest extends ServiceCase {
-
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Test
   public void testService_Init() throws Exception {
     GenerateRfc5849Header service = new GenerateRfc5849Header();

@@ -15,8 +15,11 @@
 */
 
 package com.adaptris.core.oauth.generic;
-
 import static com.adaptris.core.oauth.generic.JsonResponseHandlerTest.ACCESS_TOKEN;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,6 +36,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicStatusLine;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -45,11 +49,10 @@ import com.adaptris.core.util.LifecycleHelper;
 
 @SuppressWarnings("deprecation")
 public class GenericOauthTokenTest extends ServiceCase {
-
-  public GenericOauthTokenTest(String s) {
-    super(s);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Override
   protected Object retrieveObjectForSampleConfig() {
     GetOauthToken service = new GetOauthToken();
@@ -58,6 +61,7 @@ public class GenericOauthTokenTest extends ServiceCase {
     return service;
   }
 
+  @Test
   public void testLifecycle() throws Exception {
     GetOauthToken service = new GetOauthToken();
     GenericAccessToken tokenBuilder = new GenericAccessToken();
@@ -76,6 +80,7 @@ public class GenericOauthTokenTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testLogin() throws Exception {
     GetOauthToken service = new GetOauthToken();
     service.setAccessTokenBuilder(new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
@@ -93,6 +98,7 @@ public class GenericOauthTokenTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testLogin_WithError() throws Exception {
     GetOauthToken service = new GetOauthToken();
     service.setAccessTokenBuilder(new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
@@ -110,6 +116,7 @@ public class GenericOauthTokenTest extends ServiceCase {
   }
 
 
+  @Test
   public void testCustomResponseHandler() throws Exception {
     BasicStatusLine status = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "OK");
     CloseableHttpResponse response = mock(CloseableHttpResponse.class);
@@ -126,6 +133,7 @@ public class GenericOauthTokenTest extends ServiceCase {
     handler.throwExceptionIfAny();
   }
 
+  @Test
   public void testCustomResponseHandler_NotFound() throws Exception {
     BasicStatusLine status = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NOT_FOUND, "Not Found");
     CloseableHttpResponse response = mock(CloseableHttpResponse.class);
