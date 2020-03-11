@@ -27,8 +27,7 @@ public abstract class CredentialServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "CredentialServiceExamples.baseDir";
 
-  public CredentialServiceExample(String name) {
-    super(name);
+  public CredentialServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

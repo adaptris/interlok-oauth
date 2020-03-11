@@ -21,7 +21,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
