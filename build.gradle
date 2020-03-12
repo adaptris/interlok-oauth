@@ -69,7 +69,8 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
-  apply plugin: "jacoco"
+  apply plugin: 'jacoco'
+  apply plugin: 'com.github.spotbugs'
 
   sourceCompatibility = 1.8
   group   = 'com.adaptris'
@@ -216,6 +217,26 @@ subprojects {
       options.addStringOption "umlIncludeProtectedInnerClasses","false"
     }
   }
+
+  spotbugsMain {
+    effort = "max"
+    reportLevel = "high"
+    // showProgress = "true"
+    effort = "max"
+    // Ignore failures?
+    // ignoreFailures = false
+    reports {
+      xml {
+        enabled = false
+      }
+      html {
+        enabled = true
+      }
+    }
+  }
+
+  // disable spotbugsTests which checks our test code..
+  spotbugsTest.enabled = false
 
   check.dependsOn jacocoTestReport
   javadoc.dependsOn offlinePackageList,umlJavadoc
