@@ -15,6 +15,8 @@
 */
 package com.adaptris.core.oauth.generic;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import java.util.function.Consumer;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.InputFieldDefault;
 
@@ -122,5 +124,19 @@ public abstract class ResponseHandlerImpl implements OauthResponseHandler {
 
   protected static String convertExpiry(String expiry, ExpiryConverter converter) {
     return ObjectUtils.defaultIfNull(converter, ExpiryConverter.NONE).convertExpiry(expiry);
+  }
+
+
+  protected static void applyIfNotBlank(String value, Consumer<String> f) {
+    if (!isBlank(value)) {
+      f.accept(value);
+    }
+  }
+
+
+  protected static void applyIfNotNull(String value, Consumer<String> f) {
+    if (value != null) {
+      f.accept(value);
+    }
   }
 }

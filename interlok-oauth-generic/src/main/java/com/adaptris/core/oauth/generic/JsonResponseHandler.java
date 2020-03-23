@@ -85,17 +85,15 @@ public class JsonResponseHandler extends ResponseHandlerImpl {
       String accessToken = ctx.read(getAccessTokenPath()).toString();
       AccessToken token = new AccessToken(accessToken);     
       String tokenType = findQuietly(ctx, getTokenTypePath());
-      if (tokenType != null) {
-        token.setType(tokenType);
-      }
-      String expiry = findQuietly(ctx, getExpiresPath());
-      if (expiry != null) {
-        token.setExpiry(convertExpiry(expiry, getExpiryConverter()));
-      }
-      String refreshToken = findQuietly(ctx, getRefreshTokenPath());
-      if (refreshToken != null) {
-        token.setRefreshToken(refreshToken);
-      }
+      applyIfNotNull(findQuietly(ctx, getTokenTypePath()), (s) -> {
+        token.setType(s);
+      });
+      applyIfNotNull(findQuietly(ctx, getExpiresPath()), (s) -> {
+        token.setExpiry(convertExpiry(s, getExpiryConverter()));
+      });
+      applyIfNotNull(findQuietly(ctx, getRefreshTokenPath()), (s) -> {
+        token.setRefreshToken(s);
+      });
       return token;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

@@ -105,23 +105,22 @@ public class XmlResponseHandler extends ResponseHandlerImpl {
         throw new CoreException("Failed to extract access_token from " + getAccessTokenPath());
       }
       AccessToken token = new AccessToken(accessToken);
-      String tokenType = xpath.selectSingleTextItem(xml, getTokenTypePath());
-      if (!isBlank(tokenType)) {
-        token.setType(tokenType);
-      }
-      String expiry = xpath.selectSingleTextItem(xml, getExpiresPath());
-      if (!isBlank(expiry)) {
-        token.setExpiry(convertExpiry(expiry, getExpiryConverter()));
-      }
-      String refreshToken = xpath.selectSingleTextItem(xml, getRefreshTokenPath());
-      if (!isBlank(refreshToken)) {
-        token.setRefreshToken(refreshToken);
-      }
+      applyIfNotBlank(xpath.selectSingleTextItem(xml, getTokenTypePath()), (s) -> {
+        token.setType(s);
+      });
+      applyIfNotBlank(xpath.selectSingleTextItem(xml, getExpiresPath()), (s) -> {
+        token.setExpiry(convertExpiry(s, getExpiryConverter()));
+      });
+      applyIfNotBlank(xpath.selectSingleTextItem(xml, getRefreshTokenPath()), (s) -> {
+        token.setRefreshToken(s);
+      });
       return token;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
+
+
 
   public KeyValuePairSet getNamespaceContext() {
     return namespaceContext;
