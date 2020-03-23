@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
@@ -114,7 +112,7 @@ public abstract class AzureAccessTokenImpl implements AccessTokenBuilder {
     try {
       AuthenticationResult azureToken = doAzureAuth(msg);
       token = new AccessToken(azureToken.getAccessTokenType(), azureToken.getAccessToken(),
-          azureToken.getExpiresOnDate().getTime());
+          azureToken.getExpiresOnDate().getTime()).withRefreshToken(azureToken.getRefreshToken());
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }

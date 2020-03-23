@@ -18,14 +18,19 @@ package com.adaptris.core.oauth.generic;
 
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.ACCESS_TOKEN_PATH;
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.EXPIRES_PATH;
+import static com.adaptris.core.oauth.generic.JsonResponseHandler.REFRESH_TOKEN_PATH;
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.TOKEN_TYPE_PATH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.text.DateFormatUtil;
 
 public class JsonResponseHandlerTest {
 
@@ -33,6 +38,8 @@ public class JsonResponseHandlerTest {
   public static final String ACCESS_TOKEN_WITH_TYPE_DATE = "{\"access_token\" : \"token\", \"token_type\" : \"Bearer\", \"expires_in\" : \"2018-01-01\"}";
   public static final String ACCESS_TOKEN = "{\"access_token\" : \"token\"}";
   public static final String DUFF_JSON = "{\"blahblah\" : \"token\"}";
+  public static final String ACCESS_TOKEN_WITH_REFRESH =
+      "{ \"access_token\": \"TheAccessToken\", \"token_type\": \"Bearer\", \"expires_in\": 600, \"refresh_token\": \"TheRefreshToken\"}";
 
   @Before
   public void setUp() throws Exception {
@@ -44,6 +51,7 @@ public class JsonResponseHandlerTest {
     JsonResponseHandler worker = new JsonResponseHandler().withExpiresPath(EXPIRES_PATH).withTokenPath(ACCESS_TOKEN_PATH)
         .withTokenTypePath(TOKEN_TYPE_PATH);
     try {
+      LifecycleHelper.initAndStart(worker);
       AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_TYPE);
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
@@ -56,6 +64,7 @@ public class JsonResponseHandlerTest {
   public void testBuildToken_WithType_AndExpiry() throws Exception {
     JsonResponseHandler worker = new JsonResponseHandler();
     try {
+      LifecycleHelper.initAndStart(worker);
       AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_TYPE_DATE);
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
@@ -69,6 +78,7 @@ public class JsonResponseHandlerTest {
   public void testBuildToken_NoType() throws Exception {
     JsonResponseHandler worker = new JsonResponseHandler();
     try {
+      LifecycleHelper.initAndStart(worker);
       AccessToken token = worker.buildToken(ACCESS_TOKEN);
       assertEquals("token", token.getToken());
       assertEquals("Bearer", token.getType());
@@ -81,6 +91,7 @@ public class JsonResponseHandlerTest {
   public void testBuildToken_BadJson() throws Exception {
     JsonResponseHandler worker = new JsonResponseHandler();
     try {
+      LifecycleHelper.initAndStart(worker);
       AccessToken token = worker.buildToken(DUFF_JSON);
       fail();
     } catch (CoreException expected) {
@@ -92,4 +103,23 @@ public class JsonResponseHandlerTest {
 
   }
 
+  @Test
+  public void testBuildToken_WithAll() throws Exception {
+    JsonResponseHandler worker =
+        new JsonResponseHandler().withExpiresPath(EXPIRES_PATH).withTokenPath(ACCESS_TOKEN_PATH).withTokenTypePath(TOKEN_TYPE_PATH)
+            .withRefreshTokenPath(REFRESH_TOKEN_PATH).withExpiryConverter(ExpiryConverter.SECONDS);
+    try {
+      LifecycleHelper.initAndStart(worker);
+      AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_REFRESH);
+      assertEquals("TheAccessToken", token.getToken());
+      assertEquals("Bearer", token.getType());
+      assertEquals("TheRefreshToken", token.getRefreshToken());
+      // now + 10 minutes = sometime after now + 9 minutes ;)
+      Date expires = DateFormatUtil.parse(token.getExpiry());
+      Date expected = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(9L));
+      assertTrue(expires.after(expected));
+    } finally {
+      LifecycleHelper.stopAndClose(worker);
+    }
+  }
 }

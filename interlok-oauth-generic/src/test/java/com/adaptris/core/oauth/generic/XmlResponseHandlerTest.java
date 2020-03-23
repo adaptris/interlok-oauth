@@ -20,7 +20,10 @@ import static com.adaptris.core.oauth.generic.XmlResponseHandler.ACCESS_TOKEN_PA
 import static com.adaptris.core.oauth.generic.XmlResponseHandler.EXPIRES_PATH;
 import static com.adaptris.core.oauth.generic.XmlResponseHandler.TOKEN_TYPE_PATH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.CoreException;
@@ -28,6 +31,7 @@ import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.text.DateFormatUtil;
 
 public class XmlResponseHandlerTest {
 
@@ -36,6 +40,8 @@ public class XmlResponseHandlerTest {
 
   public static final String ACCESS_TOKEN = "<root><access_token>token</access_token></root>";
   public static final String DUFF_XML = "<root></root>";
+  public static final String ACCESS_TOKEN_WITH_REFRESH =
+      "<root><access_token>token</access_token><token_type>Bearer</token_type><expires_in>600</expires_in><refresh_token>TheRefreshToken</refresh_token></root>";
 
   @Before
   public void setUp() throws Exception {
@@ -102,4 +108,23 @@ public class XmlResponseHandlerTest {
 
   }
 
+  @Test
+  public void testBuildToken_WithRefreshToken() throws Exception {
+    XmlResponseHandler worker = new XmlResponseHandler().withXmlDocumentFactoryConfig(null).withNamespaceContext(null)
+        .withExpiryConverter(ExpiryConverter.SECONDS);
+    try {
+      LifecycleHelper.initAndStart(worker);
+      AccessToken token = worker.buildToken(ACCESS_TOKEN_WITH_REFRESH);
+      assertEquals("token", token.getToken());
+      assertEquals("Bearer", token.getType());
+      assertEquals("TheRefreshToken", token.getRefreshToken());
+      // now + 10 minutes = sometime after now + 9 minutes ;)
+      Date expires = DateFormatUtil.parse(token.getExpiry());
+      Date expected = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(9L));
+      assertTrue(expires.after(expected));
+    } finally {
+      LifecycleHelper.stopAndClose(worker);
+    }
+
+  }
 }
