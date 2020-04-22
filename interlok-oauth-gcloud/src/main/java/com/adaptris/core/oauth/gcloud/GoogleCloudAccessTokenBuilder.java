@@ -18,10 +18,8 @@ package com.adaptris.core.oauth.gcloud;
 
 
 import java.io.IOException;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -53,7 +51,7 @@ public class GoogleCloudAccessTokenBuilder implements AccessTokenBuilder {
     try {
       GoogleCredentials credential = getCredentials().build();
       com.google.auth.oauth2.AccessToken accessToken = credential.refreshAccessToken();
-      return new AccessToken(accessToken.getTokenValue(), accessToken.getExpirationTime().getTime());
+      return new AccessToken(accessToken.getTokenValue()).withExpiry(accessToken.getExpirationTime());
     } catch (Exception e) {
       throw new ServiceException("Failed to retrieve credentials", e);
     }

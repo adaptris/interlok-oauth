@@ -185,7 +185,7 @@ public class SalesforceAccessTokenTest {
     tokenBuilder.setPassword("test");
     tokenBuilder.setConsumerKey("test");
     tokenBuilder.setConsumerSecret("test");
-    AccessToken myAccessToken = new AccessToken("Bearer", "token", -1);
+    AccessToken myAccessToken = new AccessToken("Bearer", "token");
     when(worker.login((HttpEntity) anyObject())).thenReturn(myAccessToken);
     try {
       LifecycleHelper.initAndStart(tokenBuilder);
@@ -209,7 +209,7 @@ public class SalesforceAccessTokenTest {
     tokenBuilder.setPassword("PW:test");
     tokenBuilder.setConsumerKey("test");
     tokenBuilder.setConsumerSecret("test");
-    AccessToken myAccessToken = new AccessToken("Bearer", "token", -1);
+    AccessToken myAccessToken = new AccessToken("Bearer", "token");
     when(worker.login((HttpEntity) anyObject())).thenReturn(myAccessToken);
     try {
       LifecycleHelper.initAndStart(tokenBuilder);
