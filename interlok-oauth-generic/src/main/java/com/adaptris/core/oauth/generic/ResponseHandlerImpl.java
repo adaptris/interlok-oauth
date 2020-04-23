@@ -16,6 +16,7 @@
 package com.adaptris.core.oauth.generic;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.InputFieldDefault;
@@ -128,15 +129,11 @@ public abstract class ResponseHandlerImpl implements OauthResponseHandler {
 
 
   protected static void applyIfNotBlank(String value, Consumer<String> f) {
-    if (!isBlank(value)) {
-      f.accept(value);
-    }
+    Optional.ofNullable(value).filter((s) -> !isBlank(s)).ifPresent(f);
   }
 
 
   protected static void applyIfNotNull(String value, Consumer<String> f) {
-    if (value != null) {
-      f.accept(value);
-    }
+    Optional.ofNullable(value).ifPresent(f);
   }
 }
