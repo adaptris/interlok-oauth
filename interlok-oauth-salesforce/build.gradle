@@ -1,11 +1,9 @@
-apply from: "$rootDir/gradle/spotbugs.gradle"
-
 ext {
   componentName='Interlok OAUTH/Salesforce'
 }
 
 dependencies {
-  compile "org.apache.httpcomponents:httpclient:4.5.11"
+  compile "org.apache.httpcomponents:httpclient:4.5.12"
   compile "com.fasterxml.jackson.core:jackson-databind:$jacksonDatabindVersion"
 }
 

@@ -15,13 +15,21 @@
 */
 package com.adaptris.core.oauth.generic;
 
-import com.adaptris.core.CoreException;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import java.util.Optional;
+import java.util.function.Consumer;
+import org.apache.commons.lang3.ObjectUtils;
+import com.adaptris.annotation.InputFieldDefault;
 
 public abstract class ResponseHandlerImpl implements OauthResponseHandler {
 
   private String expiresPath;
   private String tokenTypePath;
   private String accessTokenPath;
+  private String refreshTokenPath;
+
+  @InputFieldDefault(value = "NONE")
+  private ExpiryConverter expiryConverter;
 
   public String getAccessTokenPath() {
     return accessTokenPath;
@@ -78,23 +86,54 @@ public abstract class ResponseHandlerImpl implements OauthResponseHandler {
     return (T) this;
   }
 
-  @Override
-  public void init() throws CoreException {
-    // override as required.
+  public String getRefreshTokenPath() {
+    return refreshTokenPath;
   }
 
-  @Override
-  public void start() throws CoreException {
-    // override as required.
+  /**
+   * Set the path to the refresh token.
+   * 
+   * @param p
+   */
+  public void setRefreshTokenPath(String p) {
+    this.refreshTokenPath = p;
   }
 
-  @Override
-  public void stop() {
-    // override as required.
+  public <T extends ResponseHandlerImpl> T withRefreshTokenPath(String s) {
+    setRefreshTokenPath(s);
+    return (T) this;
   }
 
-  @Override
-  public void close() {
-    // override as required.
+
+  public ExpiryConverter getExpiryConverter() {
+    return expiryConverter;
+  }
+
+  /**
+   * Normally the "expires_in" is in SECONDS you may wish to convert it into an ISO8601 timestamp.
+   * 
+   * @param converter the converter; default is NONE for no conversion to preserve backwards compatible behaviours
+   */
+  public void setExpiryConverter(ExpiryConverter converter) {
+    this.expiryConverter = converter;
+  }
+
+  public <T extends ResponseHandlerImpl> T withExpiryConverter(ExpiryConverter s) {
+    setExpiryConverter(s);
+    return (T) this;
+  }
+
+  protected static String convertExpiry(String expiry, ExpiryConverter converter) {
+    return ObjectUtils.defaultIfNull(converter, ExpiryConverter.NONE).convertExpiry(expiry);
+  }
+
+
+  protected static void applyIfNotBlank(String value, Consumer<String> f) {
+    Optional.ofNullable(value).filter((s) -> !isBlank(s)).ifPresent(f);
+  }
+
+
+  protected static void applyIfNotNull(String value, Consumer<String> f) {
+    Optional.ofNullable(value).ifPresent(f);
   }
 }

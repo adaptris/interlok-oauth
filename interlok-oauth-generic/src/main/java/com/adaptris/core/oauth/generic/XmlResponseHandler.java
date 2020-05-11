@@ -24,6 +24,7 @@ import org.apache.commons.io.input.ReaderInputStream;
 import org.w3c.dom.Document;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -46,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("oauth-xml-response")
 @ComponentProfile(since = "3.8.1", summary = "Handle an OAUTH XML response.", tag = "oauth,http,https")
+@DisplayOrder(order = {"accessTokenPath", "tokenTypePath", "expiresPath", "refreshTokenPath", "expiryConverter"})
 public class XmlResponseHandler extends ResponseHandlerImpl {
   /**
    * Default XPath to the TokenType - {@value #TOKEN_TYPE_PATH}
@@ -63,6 +65,11 @@ public class XmlResponseHandler extends ResponseHandlerImpl {
    */
   public static final String EXPIRES_PATH = "//expires_in";
 
+  /**
+   * Default JSON path to the refresh token {@value #REFRESH_TOKEN_PATH}.
+   */
+  public static final String REFRESH_TOKEN_PATH = "//refresh_token";
+
   @Valid
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig
@@ -77,6 +84,7 @@ public class XmlResponseHandler extends ResponseHandlerImpl {
     setAccessTokenPath(ACCESS_TOKEN_PATH);
     setExpiresPath(EXPIRES_PATH);
     setTokenTypePath(TOKEN_TYPE_PATH);
+    setRefreshTokenPath(REFRESH_TOKEN_PATH);
   }
 
   @Override
@@ -97,19 +105,22 @@ public class XmlResponseHandler extends ResponseHandlerImpl {
         throw new CoreException("Failed to extract access_token from " + getAccessTokenPath());
       }
       AccessToken token = new AccessToken(accessToken);
-      String tokenType = xpath.selectSingleTextItem(xml, getTokenTypePath());
-      if (!isBlank(tokenType)) {
-        token.setType(tokenType);
-      }
-      String expiry = xpath.selectSingleTextItem(xml, getExpiresPath());
-      if (!isBlank(expiry)) {
-        token.setExpiry(expiry);
-      }
+      applyIfNotBlank(xpath.selectSingleTextItem(xml, getTokenTypePath()), (s) -> {
+        token.setType(s);
+      });
+      applyIfNotBlank(xpath.selectSingleTextItem(xml, getExpiresPath()), (s) -> {
+        token.setExpiry(convertExpiry(s, getExpiryConverter()));
+      });
+      applyIfNotBlank(xpath.selectSingleTextItem(xml, getRefreshTokenPath()), (s) -> {
+        token.setRefreshToken(s);
+      });
       return token;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
+
+
 
   public KeyValuePairSet getNamespaceContext() {
     return namespaceContext;

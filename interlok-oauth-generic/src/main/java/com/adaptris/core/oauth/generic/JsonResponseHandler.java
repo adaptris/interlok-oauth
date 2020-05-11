@@ -17,6 +17,7 @@ package com.adaptris.core.oauth.generic;
 
 import java.util.EnumSet;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.ExceptionHelper;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("oauth-json-response")
 @ComponentProfile(since = "3.8.1", summary = "Handle an OAUTH JSON response.", tag = "oauth,http,https")
+@DisplayOrder(order = {"accessTokenPath", "tokenTypePath", "expiresPath", "refreshTokenPath", "expiryConverter"})
 public class JsonResponseHandler extends ResponseHandlerImpl {
   /**
    * Default JSON Path to the TokenType - {@value #TOKEN_TYPE_PATH}
@@ -58,6 +60,11 @@ public class JsonResponseHandler extends ResponseHandlerImpl {
    */
   public static final String EXPIRES_PATH = "$.expires_in";
 
+  /**
+   * Default JSON path to the refresh token {@value #REFRESH_TOKEN_PATH}.
+   */
+  public static final String REFRESH_TOKEN_PATH = "$.refresh_token";
+
   private transient Configuration jsonConfig;
 
   public JsonResponseHandler() {
@@ -65,6 +72,7 @@ public class JsonResponseHandler extends ResponseHandlerImpl {
     setAccessTokenPath(ACCESS_TOKEN_PATH);
     setExpiresPath(EXPIRES_PATH);
     setTokenTypePath(TOKEN_TYPE_PATH);
+    setRefreshTokenPath(REFRESH_TOKEN_PATH);
     jsonConfig = new Configuration.ConfigurationBuilder().jsonProvider(new JsonSmartJsonProvider())
         .mappingProvider(new JacksonMappingProvider()).options(EnumSet.noneOf(Option.class)).build();
   }
@@ -77,13 +85,15 @@ public class JsonResponseHandler extends ResponseHandlerImpl {
       String accessToken = ctx.read(getAccessTokenPath()).toString();
       AccessToken token = new AccessToken(accessToken);     
       String tokenType = findQuietly(ctx, getTokenTypePath());
-      if (tokenType != null) {
-        token.setType(tokenType);
-      }
-      String expiry = findQuietly(ctx, getExpiresPath());
-      if (expiry != null) {
-        token.setExpiry(expiry);
-      }
+      applyIfNotNull(findQuietly(ctx, getTokenTypePath()), (s) -> {
+        token.setType(s);
+      });
+      applyIfNotNull(findQuietly(ctx, getExpiresPath()), (s) -> {
+        token.setExpiry(convertExpiry(s, getExpiryConverter()));
+      });
+      applyIfNotNull(findQuietly(ctx, getRefreshTokenPath()), (s) -> {
+        token.setRefreshToken(s);
+      });
       return token;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

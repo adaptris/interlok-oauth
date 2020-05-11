@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
@@ -113,8 +113,8 @@ public abstract class AzureAccessTokenImpl implements AccessTokenBuilder {
     AccessToken token = null;
     try {
       AuthenticationResult azureToken = doAzureAuth(msg);
-      token = new AccessToken(azureToken.getAccessTokenType(), azureToken.getAccessToken(),
-          azureToken.getExpiresOnDate().getTime());
+      token = new AccessToken(azureToken.getAccessTokenType(), azureToken.getAccessToken())
+          .withExpiry(azureToken.getExpiresOnDate()).withRefreshToken(azureToken.getRefreshToken());
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -136,7 +136,7 @@ public abstract class AzureAccessTokenImpl implements AccessTokenBuilder {
   }
 
   String authorityUrl() {
-    return getAuthorityUrl() != null ? getAuthorityUrl() : DEFAULT_AUTHORITY;
+    return StringUtils.defaultIfEmpty(getAuthorityUrl(), DEFAULT_AUTHORITY);
   }
 
   public String getClientId() {
@@ -177,7 +177,7 @@ public abstract class AzureAccessTokenImpl implements AccessTokenBuilder {
   }
 
   boolean validateAuthority() {
-    return getValidateAuthority() != null ? getValidateAuthority().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getValidateAuthority(), false);
   }
 
   protected AuthenticationContext authenticationContext(AdaptrisMessage msg) throws MalformedURLException {

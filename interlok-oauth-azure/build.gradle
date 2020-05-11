@@ -1,11 +1,9 @@
-apply from: "$rootDir/gradle/spotbugs.gradle"
-
 ext {
   componentName='Interlok OAUTH/Azure'
 }
 
 dependencies {
-  compile "com.microsoft.azure:adal4j:1.6.4"
+  compile "com.microsoft.azure:adal4j:1.6.5"
   compile "net.minidev:json-smart:2.3"
 }
 
