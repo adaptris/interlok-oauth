@@ -5,7 +5,6 @@
  * This has been verified to work with NetSuite OAUTH 1.0 (using HMAC-SHA1), but not any other
  * providers.
  * </p>
- * <img alt="UML" src="package.svg"/>
  *
  */
 package com.adaptris.core.oauth.rfc5849;
