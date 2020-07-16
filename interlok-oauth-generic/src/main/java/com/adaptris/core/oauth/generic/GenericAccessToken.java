@@ -49,11 +49,14 @@ import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Wraps the a URL Form based OAuth authentication flow.
@@ -65,7 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>Filter the metadata to create a {@code UrlEncodedFormEntity}; the contents of the URL Form are determined solely by the
  * metadata-filter.</li>
  * <li>Post this to the configured URL.</li>
- * <li>Extract the access tken information via the configured OauthResponseHandler</li>
+ * <li>Extract the access token information via the configured OauthResponseHandler</li>
  * <li>This then is your access token</li>
  * </p>
  * <p>
@@ -77,7 +80,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * you have encoded passwords in your metadata, consider using a {@link com.adaptris.core.metadata.PasswordDecodeMetadataFilter} as
  * part of a {@link com.adaptris.core.metadata.CompositeMetadataFilter}.
  * </p>
- * 
+ *
  * @config generic-oauth-access-token
  * @see AccessTokenBuilder
  */
@@ -92,37 +95,69 @@ public class GenericAccessToken implements AccessTokenBuilder {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  /**
+   * The URL that will be used the retrieve the OAUTH access token.
+   *
+   */
   @NotBlank
   @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  @NonNull
   private String tokenUrl;
+  /**
+   * The metadata that will be used to build up the payload will be sent to the specified URL.
+   * <p>
+   * By default the payload is built up from the metadata keys 'client_id', 'client_secret',
+   * 'grant_type','refresh_token','username', 'password' using a {@link RegexMetadataFilter}. You
+   * should change this if these are not the right keys (keys that aren't present in metadata will
+   * be ignored).
+   * </p>
+   */
   @NotNull
   @AutoPopulated
   @Valid
-  @InputFieldDefault(value = "use all metadata")
+  @InputFieldDefault(
+      value = "regex-metadata-filter with 'client_id', 'client_secret', 'grant_type','refresh_token','username', 'password'")
+  @Getter
+  @Setter
+  @NonNull
   private MetadataFilter metadataFilter;
+  /**
+   * How to handle the response from the server.
+   * <p>
+   * By default we assume a JSON based response, generally, this is the right thing
+   * </p>
+   */
   @NotNull
   @Valid
   @AutoPopulated
   @InputFieldDefault (value = "json based responses")
+  @Getter
+  @Setter
+  @NonNull
   private OauthResponseHandler responseHandler;
+  /**
+   * Additional configuration that will be applied to the underlying Apache HTTP instance.
+   *
+   */
   @Valid
   @AdvancedConfig
+  @Getter
+  @Setter
   private HttpClientBuilderConfigurator clientConfig;
 
   public GenericAccessToken() {
-    setMetadataFilter(new NoOpMetadataFilter());
+    setMetadataFilter(new RegexMetadataFilter().withIncludePatterns("client_id", "client_secret",
+        "grant_type", "refresh_token", "username", "password"));
     setResponseHandler(new JsonResponseHandler());
   }
 
   @Override
   public void init() throws CoreException {
-    try {
-      Args.notBlank(getTokenUrl(), "tokenUrl");
-      Args.notNull(getResponseHandler(), "responseHandler");
-      LifecycleHelper.init(getResponseHandler());
-    } catch (IllegalArgumentException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    Args.notBlank(getTokenUrl(), "tokenUrl");
+    Args.notNull(getResponseHandler(), "responseHandler");
+    LifecycleHelper.init(getResponseHandler());
   }
 
   @Override
@@ -175,39 +210,9 @@ public class GenericAccessToken implements AccessTokenBuilder {
     }
   }
 
-
-  // private HttpEntity createEntity(AdaptrisMessage msg) throws UnsupportedEncodingException {
-  // List<NameValuePair> login = new ArrayList<NameValuePair>();
-  // getMetadataFilter().filter(msg).forEach(e -> {
-  // login.add(new BasicNameValuePair(e.getKey(), e.getValue()));
-  // });
-  // return new UrlEncodedFormEntity(login);
-  // }
-
-  public String getTokenUrl() {
-    return tokenUrl;
-  }
-
-  /**
-   * Set the token URL.
-   * 
-   * @param tokenUrl the URL,
-   */
-  public void setTokenUrl(String tokenUrl) {
-    this.tokenUrl = Args.notBlank(tokenUrl, "tokenUrl");
-  }
-
   public GenericAccessToken withTokenUrl(String url) {
     setTokenUrl(url);
     return this;
-  }
-
-  public MetadataFilter getMetadataFilter() {
-    return metadataFilter;
-  }
-
-  public void setMetadataFilter(MetadataFilter filter) {
-    this.metadataFilter = Args.notNull(filter, "metadataFilter");
   }
 
   public GenericAccessToken withMetadataFilter(MetadataFilter f) {
@@ -215,30 +220,9 @@ public class GenericAccessToken implements AccessTokenBuilder {
     return this;
   }
 
-  public OauthResponseHandler getResponseHandler() {
-    return responseHandler;
-  }
-
-  public void setResponseHandler(OauthResponseHandler responseHandler) {
-    this.responseHandler = Args.notNull(responseHandler, "responseHandler");
-  }
-
   public GenericAccessToken withResponseHandler(OauthResponseHandler f) {
     setResponseHandler(f);
     return this;
-  }
-
-  public HttpClientBuilderConfigurator getClientConfig() {
-    return clientConfig;
-  }
-
-  /**
-   * Specify any custom {@code HttpClientBuilder} configuration.
-   * 
-   * @param clientConfig a {@link HttpClientBuilderConfigurator} instance.
-   */
-  public void setClientConfig(HttpClientBuilderConfigurator clientConfig) {
-    this.clientConfig = clientConfig;
   }
 
   public GenericAccessToken withClientConfig(HttpClientBuilderConfigurator f) {

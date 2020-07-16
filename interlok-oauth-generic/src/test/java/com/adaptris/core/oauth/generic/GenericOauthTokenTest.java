@@ -39,7 +39,6 @@ import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
@@ -69,7 +68,7 @@ public class GenericOauthTokenTest extends ServiceCase {
     try {
       LifecycleHelper.initAndStart(service);
       fail();
-    } catch (CoreException expected) {
+    } catch (Exception expected) {
 
     }
     tokenBuilder.withTokenUrl("http://localhost:1234").withResponseHandler(new JsonResponseHandler());
