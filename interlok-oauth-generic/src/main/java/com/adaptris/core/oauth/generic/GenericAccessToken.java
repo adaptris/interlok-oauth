@@ -17,10 +17,12 @@
 package com.adaptris.core.oauth.generic;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -43,6 +45,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
@@ -53,6 +56,7 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NonNull;
@@ -107,6 +111,18 @@ public class GenericAccessToken implements AccessTokenBuilder {
   private String tokenUrl;
   /**
    * The metadata that will be used to build up the payload will be sent to the specified URL.
+   *
+   * @deprecated since 3.11.0; this member was poorly named, use 'formBuilder' instead.
+   */
+  @Valid
+  @Getter
+  @Setter
+  @Deprecated
+  @Removal(version="4.0", message="Poorly named use 'form-builder' instead")
+  private MetadataFilter metadataFilter;
+
+  /**
+   * The form builder will be used to build up the payload will be sent to the specified URL.
    * <p>
    * By default the payload is built up from the metadata keys 'client_id', 'client_secret',
    * 'grant_type','refresh_token','username', 'password' using a {@link RegexMetadataFilter}. You
@@ -114,15 +130,13 @@ public class GenericAccessToken implements AccessTokenBuilder {
    * be ignored).
    * </p>
    */
-  @NotNull
-  @AutoPopulated
   @Valid
   @InputFieldDefault(
       value = "regex-metadata-filter with 'client_id', 'client_secret', 'grant_type','refresh_token','username', 'password'")
   @Getter
   @Setter
-  @NonNull
-  private MetadataFilter metadataFilter;
+  private MetadataFilter formBuilder;
+
   /**
    * How to handle the response from the server.
    * <p>
@@ -147,8 +161,10 @@ public class GenericAccessToken implements AccessTokenBuilder {
   @Setter
   private HttpClientBuilderConfigurator clientConfig;
 
+  private transient boolean filterWarning;
+
   public GenericAccessToken() {
-    setMetadataFilter(new RegexMetadataFilter().withIncludePatterns("client_id", "client_secret",
+    setFormBuilder(new RegexMetadataFilter().withIncludePatterns("client_id", "client_secret",
         "grant_type", "refresh_token", "username", "password"));
     setResponseHandler(new JsonResponseHandler());
   }
@@ -157,6 +173,11 @@ public class GenericAccessToken implements AccessTokenBuilder {
   public void init() throws CoreException {
     Args.notBlank(getTokenUrl(), "tokenUrl");
     Args.notNull(getResponseHandler(), "responseHandler");
+    if (getMetadataFilter() != null) {
+      LoggingHelper.logWarning(filterWarning, () -> filterWarning = true,
+          "{} uses metadata-filter which is deprecated; use 'form-builder' instead",
+          LoggingHelper.friendlyName(this));
+    }
     LifecycleHelper.init(getResponseHandler());
   }
 
@@ -180,7 +201,7 @@ public class GenericAccessToken implements AccessTokenBuilder {
     AccessToken token = null;
     try {
       String url = msg.resolve(getTokenUrl());
-      HttpEntity entity = new UrlEncodedFormEntity(getMetadataFilter().filter(msg).stream()
+      HttpEntity entity = new UrlEncodedFormEntity(formBuilder().filter(msg).stream()
           .map(e -> new BasicNameValuePair(e.getKey(), e.getValue())).collect(Collectors.toList()));
       token = login(url, entity);
     }
@@ -215,8 +236,9 @@ public class GenericAccessToken implements AccessTokenBuilder {
     return this;
   }
 
+  // Make this use the FormBuilder setter.
   public GenericAccessToken withMetadataFilter(MetadataFilter f) {
-    setMetadataFilter(f);
+    setFormBuilder(f);
     return this;
   }
 
@@ -228,6 +250,13 @@ public class GenericAccessToken implements AccessTokenBuilder {
   public GenericAccessToken withClientConfig(HttpClientBuilderConfigurator f) {
     setClientConfig(f);
     return this;
+  }
+
+  private MetadataFilter formBuilder() throws CoreException {
+    MetadataFilter filter = ObjectUtils.defaultIfNull(getMetadataFilter(), getFormBuilder());
+    return Optional.ofNullable(filter).orElseThrow(
+        () -> new CoreException(
+            "No way to build OAUTH form entity; no metadata-filter or form-builder"));
   }
 
 

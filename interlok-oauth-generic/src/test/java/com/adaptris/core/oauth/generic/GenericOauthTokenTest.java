@@ -64,6 +64,8 @@ public class GenericOauthTokenTest extends ServiceCase {
   public void testLifecycle() throws Exception {
     GetOauthToken service = new GetOauthToken();
     GenericAccessToken tokenBuilder = new GenericAccessToken();
+    tokenBuilder.setFormBuilder(null);
+    tokenBuilder.setMetadataFilter(new NoOpMetadataFilter());
     service.setAccessTokenBuilder(tokenBuilder);
     try {
       LifecycleHelper.initAndStart(service);
@@ -83,8 +85,8 @@ public class GenericOauthTokenTest extends ServiceCase {
   public void testLogin() throws Exception {
     GetOauthToken service = new GetOauthToken();
     service.setAccessTokenBuilder(new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
-        .withTokenUrl("http://localhost:1234").withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, false))
-        .withMetadataFilter(new NoOpMetadataFilter()));
+            .withTokenUrl("http://localhost:1234")
+            .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, false)));
     try {
       LifecycleHelper.initAndStart(service);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -98,10 +100,34 @@ public class GenericOauthTokenTest extends ServiceCase {
   }
 
   @Test
+  public void testMissing_MetadataFilter() throws Exception {
+    GetOauthToken service = new GetOauthToken();
+    GenericAccessToken tokenBuilder = new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
+            .withTokenUrl("http://localhost:1234")
+            .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, false));
+    tokenBuilder.setFormBuilder(null);
+    tokenBuilder.setMetadataFilter(null);
+    service.setAccessTokenBuilder(tokenBuilder);
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      service.doService(msg);
+      fail();
+    } catch (ServiceException expected) {
+
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+
+  @Test
   public void testLogin_WithError() throws Exception {
     GetOauthToken service = new GetOauthToken();
-    service.setAccessTokenBuilder(new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
-        .withTokenUrl("http://localhost:1234").withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, true)));
+    service.setAccessTokenBuilder(new GenericAccessToken()
+        .withResponseHandler(new JsonResponseHandler()).withTokenUrl("http://localhost:1234")
+        .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, true))
+        .withMetadataFilter(new NoOpMetadataFilter()));
     try {
       LifecycleHelper.initAndStart(service);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
