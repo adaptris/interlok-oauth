@@ -17,10 +17,12 @@
 package com.adaptris.core.oauth.generic;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -43,17 +45,22 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Wraps the a URL Form based OAuth authentication flow.
@@ -65,7 +72,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>Filter the metadata to create a {@code UrlEncodedFormEntity}; the contents of the URL Form are determined solely by the
  * metadata-filter.</li>
  * <li>Post this to the configured URL.</li>
- * <li>Extract the access tken information via the configured OauthResponseHandler</li>
+ * <li>Extract the access token information via the configured OauthResponseHandler</li>
  * <li>This then is your access token</li>
  * </p>
  * <p>
@@ -77,7 +84,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * you have encoded passwords in your metadata, consider using a {@link com.adaptris.core.metadata.PasswordDecodeMetadataFilter} as
  * part of a {@link com.adaptris.core.metadata.CompositeMetadataFilter}.
  * </p>
- * 
+ *
  * @config generic-oauth-access-token
  * @see AccessTokenBuilder
  */
@@ -92,37 +99,86 @@ public class GenericAccessToken implements AccessTokenBuilder {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  /**
+   * The URL that will be used the retrieve the OAUTH access token.
+   *
+   */
   @NotBlank
   @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  @NonNull
   private String tokenUrl;
-  @NotNull
-  @AutoPopulated
+  /**
+   * The metadata that will be used to build up the payload will be sent to the specified URL.
+   *
+   * @deprecated since 3.11.0; this member was poorly named, use 'formBuilder' instead.
+   */
   @Valid
-  @InputFieldDefault(value = "use all metadata")
+  @Getter
+  @Setter
+  @Deprecated
+  @Removal(version="4.0", message="Poorly named use 'form-builder' instead")
   private MetadataFilter metadataFilter;
+
+  /**
+   * The form builder will be used to build up the payload will be sent to the specified URL.
+   * <p>
+   * By default the payload is built up from the metadata keys 'client_id', 'client_secret',
+   * 'grant_type','refresh_token','username', 'password' using a {@link RegexMetadataFilter}. You
+   * should change this if these are not the right keys (keys that aren't present in metadata will
+   * be ignored).
+   * </p>
+   */
+  @Valid
+  @InputFieldDefault(
+      value = "regex-metadata-filter with 'client_id', 'client_secret', 'grant_type','refresh_token','username', 'password'")
+  @Getter
+  @Setter
+  private MetadataFilter formBuilder;
+
+  /**
+   * How to handle the response from the server.
+   * <p>
+   * By default we assume a JSON based response, generally, this is the right thing
+   * </p>
+   */
   @NotNull
   @Valid
   @AutoPopulated
   @InputFieldDefault (value = "json based responses")
+  @Getter
+  @Setter
+  @NonNull
   private OauthResponseHandler responseHandler;
+  /**
+   * Additional configuration that will be applied to the underlying Apache HTTP instance.
+   *
+   */
   @Valid
   @AdvancedConfig
+  @Getter
+  @Setter
   private HttpClientBuilderConfigurator clientConfig;
 
+  private transient boolean filterWarning;
+
   public GenericAccessToken() {
-    setMetadataFilter(new NoOpMetadataFilter());
+    setFormBuilder(new RegexMetadataFilter().withIncludePatterns("client_id", "client_secret",
+        "grant_type", "refresh_token", "username", "password"));
     setResponseHandler(new JsonResponseHandler());
   }
 
   @Override
   public void init() throws CoreException {
-    try {
-      Args.notBlank(getTokenUrl(), "tokenUrl");
-      Args.notNull(getResponseHandler(), "responseHandler");
-      LifecycleHelper.init(getResponseHandler());
-    } catch (IllegalArgumentException e) {
-      throw ExceptionHelper.wrapCoreException(e);
+    Args.notBlank(getTokenUrl(), "tokenUrl");
+    Args.notNull(getResponseHandler(), "responseHandler");
+    if (getMetadataFilter() != null) {
+      LoggingHelper.logWarning(filterWarning, () -> filterWarning = true,
+          "{} uses metadata-filter which is deprecated; use 'form-builder' instead",
+          LoggingHelper.friendlyName(this));
     }
+    LifecycleHelper.init(getResponseHandler());
   }
 
   @Override
@@ -145,7 +201,7 @@ public class GenericAccessToken implements AccessTokenBuilder {
     AccessToken token = null;
     try {
       String url = msg.resolve(getTokenUrl());
-      HttpEntity entity = new UrlEncodedFormEntity(getMetadataFilter().filter(msg).stream()
+      HttpEntity entity = new UrlEncodedFormEntity(formBuilder().filter(msg).stream()
           .map(e -> new BasicNameValuePair(e.getKey(), e.getValue())).collect(Collectors.toList()));
       token = login(url, entity);
     }
@@ -175,52 +231,15 @@ public class GenericAccessToken implements AccessTokenBuilder {
     }
   }
 
-
-  // private HttpEntity createEntity(AdaptrisMessage msg) throws UnsupportedEncodingException {
-  // List<NameValuePair> login = new ArrayList<NameValuePair>();
-  // getMetadataFilter().filter(msg).forEach(e -> {
-  // login.add(new BasicNameValuePair(e.getKey(), e.getValue()));
-  // });
-  // return new UrlEncodedFormEntity(login);
-  // }
-
-  public String getTokenUrl() {
-    return tokenUrl;
-  }
-
-  /**
-   * Set the token URL.
-   * 
-   * @param tokenUrl the URL,
-   */
-  public void setTokenUrl(String tokenUrl) {
-    this.tokenUrl = Args.notBlank(tokenUrl, "tokenUrl");
-  }
-
   public GenericAccessToken withTokenUrl(String url) {
     setTokenUrl(url);
     return this;
   }
 
-  public MetadataFilter getMetadataFilter() {
-    return metadataFilter;
-  }
-
-  public void setMetadataFilter(MetadataFilter filter) {
-    this.metadataFilter = Args.notNull(filter, "metadataFilter");
-  }
-
+  // Make this use the FormBuilder setter.
   public GenericAccessToken withMetadataFilter(MetadataFilter f) {
-    setMetadataFilter(f);
+    setFormBuilder(f);
     return this;
-  }
-
-  public OauthResponseHandler getResponseHandler() {
-    return responseHandler;
-  }
-
-  public void setResponseHandler(OauthResponseHandler responseHandler) {
-    this.responseHandler = Args.notNull(responseHandler, "responseHandler");
   }
 
   public GenericAccessToken withResponseHandler(OauthResponseHandler f) {
@@ -228,22 +247,16 @@ public class GenericAccessToken implements AccessTokenBuilder {
     return this;
   }
 
-  public HttpClientBuilderConfigurator getClientConfig() {
-    return clientConfig;
-  }
-
-  /**
-   * Specify any custom {@code HttpClientBuilder} configuration.
-   * 
-   * @param clientConfig a {@link HttpClientBuilderConfigurator} instance.
-   */
-  public void setClientConfig(HttpClientBuilderConfigurator clientConfig) {
-    this.clientConfig = clientConfig;
-  }
-
   public GenericAccessToken withClientConfig(HttpClientBuilderConfigurator f) {
     setClientConfig(f);
     return this;
+  }
+
+  private MetadataFilter formBuilder() throws CoreException {
+    MetadataFilter filter = ObjectUtils.defaultIfNull(getMetadataFilter(), getFormBuilder());
+    return Optional.ofNullable(filter).orElseThrow(
+        () -> new CoreException(
+            "No way to build OAUTH form entity; no metadata-filter or form-builder"));
   }
 
 
