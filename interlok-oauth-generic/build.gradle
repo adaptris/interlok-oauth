@@ -1,6 +1,7 @@
 ext {
   componentName='Interlok OAUTH/Generic'
- }
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+}
 
 dependencies {
   compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
@@ -66,3 +67,12 @@ publishing {
     }
   }
 }
+delombok {
+  target = delombokTargetDir
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+clean.dependsOn deleteGeneratedFiles

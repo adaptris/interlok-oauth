@@ -37,13 +37,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Handle an OAUTH XML response.
- * 
+ *
  * <p>
- * Configure the various token values using standard {@code xpath} notation; they will be extracted from the HTTP response to build
- * the access token.
+ * Configure the various token values using standard {@code xpath} notation; they will be extracted
+ * from the HTTP response to build the access token.
  * </p>
- * 
- * @config oauth-json-response
+ *
+ * @config oauth-xml-response
  */
 @XStreamAlias("oauth-xml-response")
 @ComponentProfile(since = "3.8.1", summary = "Handle an OAUTH XML response.", tag = "oauth,http,https")
@@ -51,17 +51,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class XmlResponseHandler extends ResponseHandlerImpl {
   /**
    * Default XPath to the TokenType - {@value #TOKEN_TYPE_PATH}
-   * 
+   *
    */
   public static final String TOKEN_TYPE_PATH = "//token_type";
   /**
    * Default XPath to the Access Token - {@value #ACCESS_TOKEN_PATH}
-   * 
+   *
    */
   public static final String ACCESS_TOKEN_PATH = "//access_token";
   /**
    * Default XPath to the Expires value - {@value #EXPIRES_PATH}
-   * 
+   *
    */
   public static final String EXPIRES_PATH = "//expires_in";
 

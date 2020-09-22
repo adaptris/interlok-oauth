@@ -1,13 +1,14 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '4.2.3' apply false
+  id 'com.github.spotbugs' version '4.5.0' apply false
   id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
+  id "io.freefair.lombok" version "5.1.1" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.10-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.10-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -21,8 +22,8 @@ ext {
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.30'
-  jacksonVersion = '2.11.0'
-  jacksonDatabindVersion = '2.11.0'
+  jacksonVersion = '2.11.2'
+  jacksonDatabindVersion = '2.11.2'
 }
 
 ext.hasGraphViz = { ->
@@ -72,13 +73,18 @@ subprojects {
   apply plugin: 'jacoco'
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.owasp.dependencycheck'
+  apply plugin: "io.freefair.lombok"
 
-  sourceCompatibility = 1.8
+  java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
+  generateLombokConfig.enabled = false
 
-  // In this section you declare where to find the dependencies of your project
   repositories {
     mavenCentral()
     maven { url "$defaultNexusRepo" }
@@ -125,7 +131,8 @@ subprojects {
         exclude group: "org.apache.logging.log4j"
       }
 
-      testCompile ("org.mockito:mockito-all:1.10.19")
+      testCompile ("org.mockito:mockito-core:3.5.9")
+      testCompile ("org.mockito:mockito-inline:3.5.9")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
@@ -198,7 +205,7 @@ subprojects {
     onlyIf {
       hasGraphViz()
     }
-    source = sourceSets.main.allJava
+    source = sourceSets.main.extensions.delombokTask
     classpath = project.sourceSets.main.compileClasspath
     configure(options) {
       options.linksOffline(interlokJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-core-$interlokCoreVersion-javadoc.jar")
@@ -224,6 +231,15 @@ subprojects {
       options.addStringOption "umlIncludePackagePrivateInnerClasses", "false"
       options.addStringOption "umlIncludeProtectedInnerClasses","false"
     }
+  }
+
+  task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
+    group 'Build'
+    description 'Compile for lgtm'
+
+    source = sourceSets.main.extensions.delombokTask
+    destinationDir = sourceSets.main.java.outputDir
+    classpath = project.sourceSets.main.compileClasspath
   }
 
   spotbugsMain {

@@ -1,9 +1,10 @@
 ext {
   componentName='Interlok OAUTH/Google Cloud'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
-  compile "com.google.auth:google-auth-library-oauth2-http:0.20.0"
+  compile "com.google.auth:google-auth-library-oauth2-http:0.21.1"
   compile "com.google.guava:guava:29.0-jre"
   compile "org.apache.httpcomponents:httpclient:4.5.12"
   compile "commons-codec:commons-codec:1.14"
@@ -68,3 +69,12 @@ publishing {
     }
   }
 }
+delombok {
+  target = delombokTargetDir
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+clean.dependsOn deleteGeneratedFiles
