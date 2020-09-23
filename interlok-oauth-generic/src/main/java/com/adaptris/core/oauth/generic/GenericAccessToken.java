@@ -63,7 +63,7 @@ import lombok.Setter;
  */
 @DisplayOrder(order =
 {
-    "tokenUrl", "responseHandler", "formBuilder", "clientConfig"
+    "tokenUrl", "responseHandler", "formBuilder", "clientConfig", "additionalHttpHeaders"
 })
 @ComponentProfile(since = "3.8.1", summary = "Get a bearer token based on a URL Form based OAuth authentication flow.", tag = "oauth,http,https")
 @XStreamAlias("generic-oauth-access-token")

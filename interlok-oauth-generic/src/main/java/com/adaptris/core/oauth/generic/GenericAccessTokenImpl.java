@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -42,9 +43,12 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
+import com.adaptris.core.metadata.MetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -101,6 +105,16 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
   @Setter
   private HttpClientBuilderConfigurator clientConfig;
 
+  /**
+   * Specify any additional headers that you wish to send as part of the request.
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "no additional headers (remove-all-metadata-filter)")
+  private MetadataFilter additionalHttpHeaders;
+
+
   private transient boolean filterWarning;
 
   public GenericAccessTokenImpl() {
@@ -135,7 +149,7 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
     try {
       String url = msg.resolve(getTokenUrl());
       HttpEntity entity = buildEntity(msg);
-      token = login(url, entity,
+      token = login(url, entity, additionalHeaders().filter(msg),
           (code) -> msg.addMetadata(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE, code.toString()));
     }
     catch (Exception e) {
@@ -146,7 +160,8 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
 
   protected abstract HttpEntity buildEntity(AdaptrisMessage msg) throws Exception;
 
-  protected AccessToken login(String url, HttpEntity entity, Consumer<Integer> httpStatusCallback)
+  protected AccessToken login(String url, HttpEntity entity, MetadataCollection httpHeaders,
+      Consumer<Integer> httpStatusCallback)
       throws Exception {
     String responseBody = "";
     String httpStatusLine = "";
@@ -155,6 +170,7 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
         .defaultIfNull(getClientConfig()).configure(HttpClients.custom()).build()) {
       HttpPost post = new HttpPost(url);
       post.setEntity(entity);
+      httpHeaders.forEach((e) -> post.addHeader(e.getKey(), e.getValue()));
       CustomResponseHandler responseHandler = new CustomResponseHandler(httpStatusCallback);
       responseBody = httpclient.execute(post, responseHandler);
       httpStatusLine = responseHandler.statusLine();
@@ -167,9 +183,10 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
     }
   }
 
-  public GenericAccessTokenImpl withTokenUrl(String url) {
+  @SuppressWarnings("unchecked")
+  public <T extends GenericAccessTokenImpl> T withTokenUrl(String url) {
     setTokenUrl(url);
-    return this;
+    return (T) this;
   }
 
   @SuppressWarnings("unchecked")
@@ -183,6 +200,17 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
     setClientConfig(f);
     return (T) this;
   }
+
+  @SuppressWarnings("unchecked")
+  public <T extends GenericAccessTokenImpl> T withAdditionalHeaders(MetadataFilter f) {
+    setAdditionalHttpHeaders(f);
+    return (T) this;
+  }
+
+  private MetadataFilter additionalHeaders() {
+    return ObjectUtils.defaultIfNull(getAdditionalHttpHeaders(), new RemoveAllMetadataFilter());
+  }
+
 
   protected static class CustomResponseHandler implements ResponseHandler<String> {
 

@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.oauth.GetOauthToken;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.oauth.generic.GenericAccessTokenImplTest.MyHttpClientBuilderConfigurator;
 import com.adaptris.core.util.LifecycleHelper;
@@ -64,6 +65,7 @@ public class FormBasedAccessTokenTest extends ExampleServiceCase {
     service.setAccessTokenBuilder(new FormBasedAccessToken()
         .withResponseHandler(new JsonResponseHandler())
             .withTokenUrl("http://localhost:1234")
+            .withAdditionalHeaders(new NoOpMetadataFilter())
             .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, false)));
     try {
       LifecycleHelper.initAndStart(service);

@@ -57,7 +57,7 @@ import lombok.Setter;
  */
 @DisplayOrder(order =
 {
-    "tokenUrl", "responseHandler", "jsonContent", "clientConfig"
+    "tokenUrl", "responseHandler", "jsonContent", "clientConfig", "additionalHttpHeaders"
 })
 @ComponentProfile(since = "3.11.1",
     summary = "Get a OAUTH token by POSTing a JSON payload to the specified URL.",
@@ -82,6 +82,7 @@ public class JsonBasedAccessToken extends GenericAccessTokenImpl {
   @Getter
   @Setter
   private MetadataFilter contentBuilder;
+
 
   @Override
   protected HttpEntity buildEntity(AdaptrisMessage msg) throws Exception {

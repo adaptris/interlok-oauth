@@ -44,6 +44,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.http.apache.HttpClientBuilderConfigurator;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.LifecycleHelper;
@@ -109,7 +110,8 @@ public class GenericAccessTokenImplTest extends GenericAccessToken {
   }
 
   @Override
-  protected AccessToken login(String url, HttpEntity entity, Consumer<Integer> httpStatusCallback) {
+  protected AccessToken login(String url, HttpEntity entity, MetadataCollection httpHeaders,
+      Consumer<Integer> httpStatusCallback) {
     AccessToken token = new AccessToken("token");
     Optional.ofNullable(httpStatusCallback).ifPresent((c) -> c.accept(200));
     return new AccessToken("token");
