@@ -61,6 +61,9 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
   protected static final StatusLine DEFAULT_STATUS =
       new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
 
+  protected static final String[] DEFAULT_METADATA_PATTERNS =
+      {"client_id", "client_secret", "grant_type", "refresh_token", "username", "password"};
+
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /**
