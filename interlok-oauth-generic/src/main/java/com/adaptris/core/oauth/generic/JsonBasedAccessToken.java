@@ -52,7 +52,7 @@ import lombok.Setter;
  * {@link com.adaptris.core.metadata.CompositeMetadataFilter}.
  * </p>
  *
- * @config generic-oauth-access-token
+ * @config oauth-access-token-via-json
  * @see AccessTokenBuilder
  */
 @DisplayOrder(order =
