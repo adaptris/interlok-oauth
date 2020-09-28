@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
   id 'com.github.spotbugs' version '4.5.0' apply false
-  id 'org.owasp.dependencycheck' version '6.0.1' apply false
+  id 'org.owasp.dependencycheck' version '6.0.2' apply false
   id "io.freefair.lombok" version "5.2.1" apply false
 }
 
@@ -131,8 +131,8 @@ subprojects {
         exclude group: "org.apache.logging.log4j"
       }
 
-      testCompile ("org.mockito:mockito-core:3.5.11")
-      testCompile ("org.mockito:mockito-inline:3.5.11")
+      testCompile ("org.mockito:mockito-core:3.5.13")
+      testCompile ("org.mockito:mockito-inline:3.5.13")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
