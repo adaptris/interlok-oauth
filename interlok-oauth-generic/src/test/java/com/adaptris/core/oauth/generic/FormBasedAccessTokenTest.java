@@ -21,41 +21,37 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.oauth.GetOauthToken;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.oauth.generic.GenericAccessTokenImplTest.MyHttpClientBuilderConfigurator;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 @SuppressWarnings("deprecation")
-public class GenericOauthTokenTest extends ServiceCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class FormBasedAccessTokenTest extends ExampleServiceCase {
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     GetOauthToken service = new GetOauthToken();
     service.setAccessTokenBuilder(
-        new GenericAccessToken().withResponseHandler(new JsonResponseHandler()).withTokenUrl("http://my-oauth-server.com/oauth"));
+        new FormBasedAccessToken()
+            .withFormBuilder(
+                new RegexMetadataFilter()
+                    .withIncludePatterns(GenericAccessTokenImpl.DEFAULT_METADATA_PATTERNS))
+            .withResponseHandler(new JsonResponseHandler())
+            .withTokenUrl("http://my-oauth-server.com/oauth"));
     return service;
   }
 
   @Test
   public void testLifecycle() throws Exception {
     GetOauthToken service = new GetOauthToken();
-    GenericAccessToken tokenBuilder = new GenericAccessToken();
-    tokenBuilder.setFormBuilder(null);
-    tokenBuilder.setMetadataFilter(new NoOpMetadataFilter());
+    FormBasedAccessToken tokenBuilder = new FormBasedAccessToken();
+    tokenBuilder.withTokenUrl("http://localhost:1234")
+        .withResponseHandler(new JsonResponseHandler());
     service.setAccessTokenBuilder(tokenBuilder);
-    try {
-      LifecycleHelper.initAndStart(service);
-      fail();
-    } catch (Exception expected) {
-
-    }
-    tokenBuilder.withTokenUrl("http://localhost:1234").withResponseHandler(new JsonResponseHandler());
     try {
       LifecycleHelper.initAndStart(service);
     } finally {
@@ -66,8 +62,10 @@ public class GenericOauthTokenTest extends ServiceCase {
   @Test
   public void testLogin() throws Exception {
     GetOauthToken service = new GetOauthToken();
-    service.setAccessTokenBuilder(new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
+    service.setAccessTokenBuilder(new FormBasedAccessToken()
+        .withResponseHandler(new JsonResponseHandler())
             .withTokenUrl("http://localhost:1234")
+            .withAdditionalHeaders(new NoOpMetadataFilter())
             .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, false)));
     try {
       LifecycleHelper.initAndStart(service);
@@ -83,33 +81,12 @@ public class GenericOauthTokenTest extends ServiceCase {
     }
   }
 
-  @Test
-  public void testMissing_MetadataFilter() throws Exception {
-    GetOauthToken service = new GetOauthToken();
-    GenericAccessToken tokenBuilder = new GenericAccessToken().withResponseHandler(new JsonResponseHandler())
-            .withTokenUrl("http://localhost:1234")
-            .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, false));
-    tokenBuilder.setFormBuilder(null);
-    tokenBuilder.setMetadataFilter(null);
-    service.setAccessTokenBuilder(tokenBuilder);
-    try {
-      LifecycleHelper.initAndStart(service);
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      service.doService(msg);
-      fail();
-    } catch (ServiceException expected) {
-
-    } finally {
-      LifecycleHelper.stopAndClose(service);
-    }
-  }
-
 
   @Test
   public void testLogin_WithError() throws Exception {
     GetOauthToken service = new GetOauthToken();
     service
-        .setAccessTokenBuilder(new GenericAccessToken().withMetadataFilter(new NoOpMetadataFilter())
+        .setAccessTokenBuilder(new FormBasedAccessToken()
         .withResponseHandler(new JsonResponseHandler()).withTokenUrl("http://localhost:1234")
             .withClientConfig(new MyHttpClientBuilderConfigurator(ACCESS_TOKEN, true)));
     try {
