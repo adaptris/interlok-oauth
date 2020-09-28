@@ -132,7 +132,7 @@ subprojects {
       }
 
       testCompile ("org.mockito:mockito-core:3.5.11")
-      testCompile ("org.mockito:mockito-inline:3.5.11")
+      testCompile ("org.mockito:mockito-inline:3.5.13")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
