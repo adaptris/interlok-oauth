@@ -21,7 +21,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.metadata.MetadataFilter;
@@ -68,7 +68,7 @@ import lombok.Setter;
 @ComponentProfile(since = "3.8.1", summary = "Get a bearer token based on a URL Form based OAuth authentication flow.", tag = "oauth,http,https")
 @XStreamAlias("generic-oauth-access-token")
 @Deprecated
-@Removal(version = "4.0.0", message = "use 'oauth-access-token-via-form' instead")
+@ConfigDeprecated(removalVersion = "4.0.0", message = "use 'oauth-access-token-via-form' instead", groups = Deprecated.class)
 public class GenericAccessToken extends FormBasedAccessToken {
 
   /**
@@ -80,7 +80,7 @@ public class GenericAccessToken extends FormBasedAccessToken {
   @Getter
   @Setter
   @Deprecated
-  @Removal(version="4.0", message="Poorly named use 'form-builder' instead")
+  @ConfigDeprecated(removalVersion="4.0", message="Poorly named use 'form-builder' instead", groups = Deprecated.class)
   private MetadataFilter metadataFilter;
 
   private transient boolean filterWarning;
