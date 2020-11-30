@@ -1,9 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '4.5.0' apply false
-  id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
-  id "io.freefair.lombok" version "5.1.1" apply false
+  id 'com.github.spotbugs' version '4.5.1' apply false
+  id 'org.owasp.dependencycheck' version '6.0.3' apply false
+  id "io.freefair.lombok" version "5.3.0" apply false
 }
 
 ext {
@@ -22,8 +22,8 @@ ext {
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.30'
-  jacksonVersion = '2.11.2'
-  jacksonDatabindVersion = '2.11.2'
+  jacksonVersion = '2.11.3'
+  jacksonDatabindVersion = '2.11.3'
 }
 
 ext.hasGraphViz = { ->
@@ -122,7 +122,7 @@ subprojects {
       compile ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       compile ("org.slf4j:slf4j-api:$slf4jVersion")
       annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      testCompile ('junit:junit:4.13')
+      testCompile ('junit:junit:4.13.1')
       testCompile "org.slf4j:slf4j-simple:$slf4jVersion"
       // exclude any log4j dependencies so that we can just use slf4j simple.
       // works around INTERLOk-3233
@@ -131,8 +131,8 @@ subprojects {
         exclude group: "org.apache.logging.log4j"
       }
 
-      testCompile ("org.mockito:mockito-core:3.5.9")
-      testCompile ("org.mockito:mockito-inline:3.5.9")
+      testCompile ("org.mockito:mockito-core:3.6.0")
+      testCompile ("org.mockito:mockito-inline:3.6.0")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
@@ -259,7 +259,7 @@ subprojects {
     }
   }
   dependencyCheck  {
-    suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
+    suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" , "$rootDir/gradle/owasp-exclude.xml" ]
     skipConfigurations = [ "antSql", "spotbugs", "umlDoclet", "offlineJavadocPackages", "javadoc", "jacocoAnt", "jacocoAgent", "spotbugsPlugins", "spotbugsSlf4j" ]
     formats = [ "HTML", "JUNIT" ]
     junitFailOnCVSS = 7.0

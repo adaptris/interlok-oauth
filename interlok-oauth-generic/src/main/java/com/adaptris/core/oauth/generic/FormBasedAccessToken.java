@@ -16,19 +16,23 @@
 
 package com.adaptris.core.oauth.generic;
 
-import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.validation.constraints.ConfigDeprecated;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
-import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -56,63 +60,51 @@ import lombok.Setter;
  * {@link com.adaptris.core.metadata.CompositeMetadataFilter}.
  * </p>
  *
- * @config generic-oauth-access-token
- * @deprecated since 3.11.1 poorly named since we can get an access token via a form or a JSON
- *             payload, use {@link FormBasedAccessToken} instead.
+ * @config oauth-access-token-via-form
  * @see AccessTokenBuilder
  */
 @DisplayOrder(order =
 {
     "tokenUrl", "responseHandler", "formBuilder", "clientConfig", "additionalHttpHeaders"
 })
-@ComponentProfile(since = "3.8.1", summary = "Get a bearer token based on a URL Form based OAuth authentication flow.", tag = "oauth,http,https")
-@XStreamAlias("generic-oauth-access-token")
-@Deprecated
-@ConfigDeprecated(removalVersion = "4.0.0", message = "use 'oauth-access-token-via-form' instead", groups = Deprecated.class)
-public class GenericAccessToken extends FormBasedAccessToken {
+@ComponentProfile(since = "3.11.1",
+    summary = "Get a bearer token based on a URL Form based OAuth authentication flow.",
+    tag = "oauth,http,https")
+@XStreamAlias("oauth-access-token-via-form")
+@NoArgsConstructor
+public class FormBasedAccessToken extends GenericAccessTokenImpl {
 
   /**
-   * The metadata that will be used to build up the payload will be sent to the specified URL.
-   *
-   * @deprecated since 3.11.0; this member was poorly named, use 'formBuilder' instead.
+   * The form builder will be used to build up the payload will be sent to the specified URL.
+   * <p>
+   * By default the payload is built up from the metadata keys 'client_id', 'client_secret',
+   * 'grant_type','refresh_token','username', 'password' using a {@link RegexMetadataFilter}. You
+   * should change this if these are not the right keys (keys that aren't present in metadata will
+   * be ignored).
+   * </p>
    */
   @Valid
+  @InputFieldDefault(
+      value = "regex-metadata-filter with 'client_id', 'client_secret', 'grant_type','refresh_token','username', 'password'")
   @Getter
   @Setter
-  @Deprecated
-  @ConfigDeprecated(removalVersion="4.0", message="Poorly named use 'form-builder' instead", groups = Deprecated.class)
-  private MetadataFilter metadataFilter;
+  private MetadataFilter formBuilder;
 
-  private transient boolean filterWarning;
-  private transient boolean deprecationWarning;
-
-  public GenericAccessToken() {
-    setFormBuilder(new RegexMetadataFilter().withIncludePatterns(DEFAULT_METADATA_PATTERNS));
-  }
 
   @Override
-  public void init() throws CoreException {
-    LoggingHelper.logDeprecation(deprecationWarning, () -> deprecationWarning = true,
-        getClass().getCanonicalName(),
-        FormBasedAccessToken.class.getCanonicalName());
-    if (getMetadataFilter() != null) {
-      LoggingHelper.logWarning(filterWarning, () -> filterWarning = true,
-          "{} uses metadata-filter which is deprecated; use 'form-builder' instead",
-          LoggingHelper.friendlyName(this));
-    }
-    super.init();
+  protected HttpEntity buildEntity(AdaptrisMessage msg) throws Exception {
+    return new UrlEncodedFormEntity(formBuilder().filter(msg).stream()
+        .map(e -> new BasicNameValuePair(e.getKey(), e.getValue())).collect(Collectors.toList()));
   }
 
-  public GenericAccessToken withMetadataFilter(MetadataFilter f) {
-    return withFormBuilder(f);
+  public <T extends FormBasedAccessToken> T withFormBuilder(MetadataFilter f) {
+    setFormBuilder(f);
+    return (T) this;
   }
 
-  @Override
   protected MetadataFilter formBuilder() throws CoreException {
-    MetadataFilter filter = ObjectUtils.defaultIfNull(getMetadataFilter(), getFormBuilder());
-    return Optional.ofNullable(filter).orElseThrow(
-        () -> new CoreException(
-            "No way to build OAUTH form entity; no metadata-filter or form-builder"));
+    return ObjectUtils.defaultIfNull(getFormBuilder(),
+        new RegexMetadataFilter().withIncludePatterns(DEFAULT_METADATA_PATTERNS));
   }
 
 }
