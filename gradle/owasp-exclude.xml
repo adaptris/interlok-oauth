@@ -9,4 +9,13 @@ OpenID allows remote attackers to forcibly log a user into an OpenID enabled sit
     <cve>CVE-2007-1652</cve>
     <cve>CVE-2007-1651</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: grpc-context-1.22.1.jar
+      // CVE-2020-7768 -> Relates to Javascript
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-context@.*$</packageUrl>
+    <cve>CVE-2020-7768</cve>
+  </suppress>
+
 </suppressions>
