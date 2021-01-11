@@ -130,8 +130,8 @@ subprojects {
         exclude group: "org.apache.logging.log4j"
       }
 
-      testCompile ("org.mockito:mockito-core:3.6.28")
-      testCompile ("org.mockito:mockito-inline:3.6.28")
+      testCompile ("org.mockito:mockito-core:3.7.0")
+      testCompile ("org.mockito:mockito-inline:3.7.0")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
