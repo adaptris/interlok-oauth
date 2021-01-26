@@ -1,14 +1,14 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '4.5.1' apply false
-  id 'org.owasp.dependencycheck' version '6.0.3' apply false
+  id 'com.github.spotbugs' version '4.6.0' apply false
+  id 'org.owasp.dependencycheck' version '6.0.5' apply false
   id "io.freefair.lombok" version "5.3.0" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.12-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.12-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -22,8 +22,7 @@ ext {
   interlokApacheHttpJavadocs= project.hasProperty('interlokApacheHttpJavadocs') ? project.getProperty('interlokApacheHttpJavadocs') : javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.30'
-  jacksonVersion = '2.11.3'
-  jacksonDatabindVersion = '2.11.3'
+
 }
 
 ext.hasGraphViz = { ->
@@ -131,8 +130,8 @@ subprojects {
         exclude group: "org.apache.logging.log4j"
       }
 
-      testCompile ("org.mockito:mockito-core:3.6.0")
-      testCompile ("org.mockito:mockito-inline:3.6.0")
+      testCompile ("org.mockito:mockito-core:3.7.0")
+      testCompile ("org.mockito:mockito-inline:3.7.0")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")

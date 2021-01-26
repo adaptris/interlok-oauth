@@ -4,11 +4,11 @@ ext {
 }
 
 dependencies {
-  compile "com.google.auth:google-auth-library-oauth2-http:0.22.0"
-  compile "com.google.guava:guava:30.0-jre"
+  compile "com.google.auth:google-auth-library-oauth2-http:0.22.2"
+  compile "com.google.guava:guava:30.1-jre"
   compile "org.apache.httpcomponents:httpclient:4.5.13"
   compile "commons-codec:commons-codec:1.15"
-  compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+  compile "com.fasterxml.jackson.core:jackson-core:2.12.1"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -51,11 +51,12 @@ publishing {
           pom.withXml {
             asNode().appendNode("name", componentName)
             asNode().appendNode("description", "Retrieving OAUTH access tokens from Google Cloud")
-            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html#oauth")
+            asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-http-client?id=oauth")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")
             properties.appendNode("license", "false")
             properties.appendNode("tags", "oauth,google,gcloud")
+            properties.appendNode("repository", "https://github.com/adaptris/interlok-oauth")              
           }
       }
   }

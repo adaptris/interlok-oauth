@@ -6,7 +6,7 @@ ext {
 dependencies {
   compile ("org.apache.httpcomponents:httpclient:4.5.13")
   compile ("commons-codec:commons-codec:1.15")
-  compile ("com.fasterxml.jackson.core:jackson-databind:$jacksonDatabindVersion")
+  compile ("com.fasterxml.jackson.core:jackson-databind:2.12.1")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -48,11 +48,12 @@ publishing {
           pom.withXml {
             asNode().appendNode("name", componentName)
             asNode().appendNode("description", "Retrieving OAUTH access tokens from Salesforce")
-            asNode().appendNode("url", "http://interlok.adaptris.net/interlok-docs/cookbook-http-client.html#oauth")
+            asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-http-client?id=oauth")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")
             properties.appendNode("license", "false")
             properties.appendNode("tags", "oauth,salesforce")
+            properties.appendNode("repository", "https://github.com/adaptris/interlok-oauth")
           }
       }
   }
