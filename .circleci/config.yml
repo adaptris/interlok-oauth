@@ -166,5 +166,4 @@ workflows:
   version: 2
   on_commit:
     jobs:
-      - build
       - buildjava11
