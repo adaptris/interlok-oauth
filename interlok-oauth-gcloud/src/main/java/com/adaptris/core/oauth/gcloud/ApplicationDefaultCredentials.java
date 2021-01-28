@@ -22,6 +22,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.io.IOException;
 
+/**
+ * @config application-default-credentials
+ */
 @XStreamAlias("application-default-credentials")
 public class ApplicationDefaultCredentials extends ScopedCredentials {
 

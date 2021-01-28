@@ -30,6 +30,9 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * @config google-cloud-access-token-builder
+ */
 @XStreamAlias("google-cloud-access-token-builder")
 public class GoogleCloudAccessTokenBuilder implements AccessTokenBuilder {
 

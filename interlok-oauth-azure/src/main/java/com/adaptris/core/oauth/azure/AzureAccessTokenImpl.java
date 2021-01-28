@@ -47,7 +47,6 @@ import com.microsoft.aad.adal4j.AuthenticationResult;
  * <a href="https://graph.microsoft.com/v1.0/me/">https://graph.microsoft.com/v1.0/me/</a>.
  * </p>
  * 
- * @config azure-access-token
  * @see GetOauthToken
  * @see AccessTokenBuilder
  */
