@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok OAUTH/Salesforce'
+  componentDesc='Retrieving OAUTH access tokens from Salesforce'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -47,7 +48,7 @@ publishing {
           artifact sourcesJar { classifier "sources" }
           pom.withXml {
             asNode().appendNode("name", componentName)
-            asNode().appendNode("description", "Retrieving OAUTH access tokens from Salesforce")
+            asNode().appendNode("description", componentDesc)
             asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-http-client?id=oauth")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")

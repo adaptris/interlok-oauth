@@ -1,5 +1,6 @@
 ext {
-  componentName='Interlok OAUTH/Google Cloud'
+  componentName='Interlok OAUTH/Google'
+  componentDesc='Retrieving OAUTH access tokens from Google Cloud'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -50,13 +51,13 @@ publishing {
           artifact sourcesJar { classifier "sources" }
           pom.withXml {
             asNode().appendNode("name", componentName)
-            asNode().appendNode("description", "Retrieving OAUTH access tokens from Google Cloud")
+            asNode().appendNode("description", componentDesc)
             asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-http-client?id=oauth")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")
             properties.appendNode("license", "false")
             properties.appendNode("tags", "oauth,google,gcloud")
-            properties.appendNode("repository", "https://github.com/adaptris/interlok-oauth")              
+            properties.appendNode("repository", "https://github.com/adaptris/interlok-oauth")
           }
       }
   }

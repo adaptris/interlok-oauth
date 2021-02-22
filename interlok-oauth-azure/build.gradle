@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok OAUTH/Azure'
+  componentDesc='Retrieving OAUTH access tokens from Azure'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -50,14 +51,14 @@ publishing {
           artifact sourcesJar { classifier "sources" }
           pom.withXml {
             asNode().appendNode("name", componentName)
-            asNode().appendNode("description", "Retrieving OAUTH access tokens from Azure")
+            asNode().appendNode("description", componentDesc)
             asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-http-client?id=oauth")
             def properties = asNode().appendNode("properties")
             properties.appendNode("target", "3.6.5+")
             properties.appendNode("license", "false")
             properties.appendNode("tags", "oauth,azure")
             properties.appendNode("externalUrl", "https://github.com/AzureAD/azure-activedirectory-library-for-java")
-            properties.appendNode("repository", "https://github.com/adaptris/interlok-oauth")      
+            properties.appendNode("repository", "https://github.com/adaptris/interlok-oauth")
           }
       }
   }
