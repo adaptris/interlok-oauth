@@ -18,11 +18,11 @@ package com.adaptris.core.oauth.azure;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.http.oauth.AccessTokenBuilder;
 import com.adaptris.core.http.oauth.GetOauthToken;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class GetOauthTokenTest extends ServiceCase {
+public class GetOauthTokenTest extends ExampleServiceCase {
 
   private enum AzureTokenBuilder {
 
@@ -33,7 +33,7 @@ public class GetOauthTokenTest extends ServiceCase {
         return new AzureUsernamePasswordAccessToken().withUsernamePassword("myUsername", "MyPassword").withClientId("MyClientId")
             .withResource("http://resource.url/");
       }
-      
+
     },
     ClientSecret() {
       @Override
@@ -47,10 +47,7 @@ public class GetOauthTokenTest extends ServiceCase {
     protected abstract AccessTokenBuilder build();
 
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected List retrieveObjectsForSampleConfig() {

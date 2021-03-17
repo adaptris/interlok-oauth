@@ -9,8 +9,8 @@ import java.util.Map;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.http.jetty.JettyConstants;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.util.stream.StreamUtil;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -122,7 +122,7 @@ public class EmbeddedUndertow {
     }
 
     public ResponseMessage withBody(String msg) {
-      this.body = msg;
+      body = msg;
       return this;
     }
 
@@ -131,7 +131,7 @@ public class EmbeddedUndertow {
     }
 
     public ResponseMessage withHeaders(Map<HttpString, String> hdrs) {
-      this.headers = hdrs;
+      headers = hdrs;
       return this;
     }
 
@@ -140,7 +140,7 @@ public class EmbeddedUndertow {
     }
 
     public ResponseMessage withStatus(int httpStatus) {
-      this.status = httpStatus;
+      status = httpStatus;
       return this;
     }
   }

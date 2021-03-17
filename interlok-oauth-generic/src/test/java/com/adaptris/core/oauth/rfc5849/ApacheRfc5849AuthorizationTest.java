@@ -23,16 +23,12 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.apache.HttpRequestService;
 import com.adaptris.core.http.apache.NoConnectionManagement;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class ApacheRfc5849AuthorizationTest extends ServiceCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class ApacheRfc5849AuthorizationTest extends ExampleServiceCase {
 
   @Test
   public void testAuthorization_Exception() throws Exception {
@@ -44,7 +40,7 @@ public class ApacheRfc5849AuthorizationTest extends ServiceCase {
     service.setMethod("POST");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     try {
-      ServiceCase.execute(service, msg);
+      execute(service, msg);
       fail();
     } catch (ServiceException expected) {
     }
@@ -63,7 +59,7 @@ public class ApacheRfc5849AuthorizationTest extends ServiceCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     try {
       undertow.start();
-      ServiceCase.execute(service, msg);
+      execute(service, msg);
     } finally {
       undertow.shutdown();
     }

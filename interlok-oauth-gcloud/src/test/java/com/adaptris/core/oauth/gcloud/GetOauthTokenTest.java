@@ -17,15 +17,10 @@
 package com.adaptris.core.oauth.gcloud;
 
 import java.util.Arrays;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.http.oauth.GetOauthToken;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class GetOauthTokenTest extends ServiceCase {
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class GetOauthTokenTest extends ExampleServiceCase {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

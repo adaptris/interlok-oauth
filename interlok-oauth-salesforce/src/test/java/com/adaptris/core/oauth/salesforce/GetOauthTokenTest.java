@@ -16,15 +16,11 @@
 
 package com.adaptris.core.oauth.salesforce;
 
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.http.oauth.GetOauthToken;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class GetOauthTokenTest extends ServiceCase {
+public class GetOauthTokenTest extends ExampleServiceCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   protected Object retrieveObjectForSampleConfig() {
     GetOauthToken service = new GetOauthToken();

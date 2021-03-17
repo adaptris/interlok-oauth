@@ -23,16 +23,13 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class OauthAuthorizationServiceTest extends ServiceCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class OauthAuthorizationServiceTest extends ExampleServiceCase {
+
   @Test
   public void testService_Init() throws Exception {
     GenerateRfc5849Header service = new GenerateRfc5849Header();
@@ -54,7 +51,7 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
         new GenerateRfc5849Header().withMethod("POST").withUrl("http://localhost");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     try {
-      ServiceCase.execute(service, msg);
+      execute(service, msg);
       fail();
     } catch (ServiceException expected) {
     }
@@ -66,7 +63,7 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
         new GenerateRfc5849Header().withMethod("POST").withUrl("http://localhost");
     AuthorizationDataTest.configure(service.getAuthorizationData());
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
-    ServiceCase.execute(service, msg);
+    execute(service, msg);
     assertNotNull(msg.getMetadataValue("Authorization"));
     assertTrue(msg.getMetadataValue("Authorization").startsWith("OAuth"));
   }
@@ -79,7 +76,7 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
             .withTargetMetadataKey("X-Authorization")
             .withAuthorizationData(AuthorizationDataTest.configure(new AuthorizationData()));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
-    ServiceCase.execute(service, msg);
+    execute(service, msg);
     assertNull(msg.getMetadataValue("Authorization"));
     assertNotNull(msg.getMetadataValue("X-Authorization"));
     assertTrue(msg.getMetadataValue("X-Authorization").startsWith("OAuth"));
@@ -93,7 +90,7 @@ public class OauthAuthorizationServiceTest extends ServiceCase {
     AuthorizationDataTest.configure(service.getAuthorizationData());
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     msg.addMetadata("Hello", "World");
-    ServiceCase.execute(service, msg);
+    execute(service, msg);
     assertNotNull(msg.getMetadataValue("Authorization"));
     assertTrue(msg.getMetadataValue("Authorization").startsWith("OAuth"));
   }

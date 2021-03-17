@@ -50,7 +50,7 @@ import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.LifecycleHelper;
 
 @SuppressWarnings("deprecation")
-public class GenericAccessTokenImplTest extends GenericAccessToken {
+public class GenericAccessTokenImplTest extends FormBasedAccessToken {
 
   @Test
   public void testLogin() throws Exception {
