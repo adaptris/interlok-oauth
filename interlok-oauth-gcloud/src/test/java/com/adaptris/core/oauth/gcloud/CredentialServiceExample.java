@@ -16,10 +16,10 @@
 
 package com.adaptris.core.oauth.gcloud;
 
-import com.adaptris.core.ServiceCase;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 
-public abstract class CredentialServiceExample extends ServiceCase {
+public abstract class CredentialServiceExample extends ExampleServiceCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.

@@ -29,6 +29,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 
+/**
+ * @config key-file-credentials
+ */
 @XStreamAlias("key-file-credentials")
 public class KeyFileCredentials extends ScopedCredentials {
 
