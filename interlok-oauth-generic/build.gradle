@@ -7,6 +7,11 @@ ext {
 dependencies {
   compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
   compile ("com.jayway.jsonpath:json-path:2.4.0")
+    constraints {
+      compile("net.minidev:json-smart:2.3.1") {
+        because "CVE-2021-27568: Affect json-smart up to (excluding) 2.3.1"
+      }
+    }
   compile ("com.fasterxml.jackson.core:jackson-databind:2.12.3")
   testCompile ("io.undertow:undertow-core:2.2.8.Final")
  }
