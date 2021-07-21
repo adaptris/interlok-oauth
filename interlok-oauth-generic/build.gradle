@@ -8,7 +8,7 @@ dependencies {
   api ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
   api ("com.jayway.jsonpath:json-path:2.6.0")
   api ("com.fasterxml.jackson.core:jackson-databind:2.12.4")
-  testImplementation ("io.undertow:undertow-core:2.2.8.Final")
+  testImplementation ("io.undertow:undertow-core:2.2.9.Final")
  }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
