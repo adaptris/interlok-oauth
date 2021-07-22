@@ -7,7 +7,7 @@ ext {
 dependencies {
   api "com.microsoft.azure:adal4j:1.6.7"
   api "net.minidev:json-smart:2.4.7"
-  api "com.nimbusds:nimbus-jose-jwt:9.9.3"
+  api "com.nimbusds:nimbus-jose-jwt:9.11.1"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
