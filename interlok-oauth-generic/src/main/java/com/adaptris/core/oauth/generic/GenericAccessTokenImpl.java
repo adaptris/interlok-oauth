@@ -167,7 +167,7 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
     String httpStatusLine = "";
 
     try (CloseableHttpClient httpclient = HttpClientBuilderConfigurator
-        .defaultIfNull(getClientConfig()).configure(HttpClients.custom()).build()) {
+        .defaultIfNull(getClientConfig()).configure(HttpClients.custom()).useSystemProperties().build()) {
       HttpPost post = new HttpPost(url);
       post.setEntity(entity);
       httpHeaders.forEach((e) -> post.addHeader(e.getKey(), e.getValue()));

@@ -145,6 +145,7 @@ public class GenericAccessTokenImplTest extends FormBasedAccessToken {
       }
       mockBuilder = mock(HttpClientBuilder.class);
       when(mockBuilder.build()).thenReturn(client);
+      when(mockBuilder.useSystemProperties()).thenReturn(mockBuilder);
     }
 
     @Override
