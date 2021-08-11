@@ -31,6 +31,7 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.util.EntityUtils;
@@ -165,9 +166,9 @@ public abstract class GenericAccessTokenImpl implements AccessTokenBuilder {
       throws Exception {
     String responseBody = "";
     String httpStatusLine = "";
-
+    
     try (CloseableHttpClient httpclient = HttpClientBuilderConfigurator
-        .defaultIfNull(getClientConfig()).configure(HttpClients.custom()).build()) {
+        .defaultIfNull(getClientConfig()).configure(HttpClients.custom()).useSystemProperties().build()) {
       HttpPost post = new HttpPost(url);
       post.setEntity(entity);
       httpHeaders.forEach((e) -> post.addHeader(e.getKey(), e.getValue()));
