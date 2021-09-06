@@ -5,10 +5,10 @@ ext {
 }
 
 dependencies {
-  compile ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
-  compile ("com.jayway.jsonpath:json-path:2.6.0")
-  compile ("com.fasterxml.jackson.core:jackson-databind:2.12.3")
-  testCompile ("io.undertow:undertow-core:2.2.8.Final")
+  api ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
+  api ("com.jayway.jsonpath:json-path:2.6.0")
+  api ("com.fasterxml.jackson.core:jackson-databind:2.12.4")
+  testImplementation ("io.undertow:undertow-core:2.2.10.Final")
  }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
