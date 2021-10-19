@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
@@ -135,12 +135,12 @@ public class GenericAccessTokenImplTest extends FormBasedAccessToken {
       when(response.getEntity().getContent()).thenReturn(IOUtils.toInputStream(responseContent,Charset.defaultCharset()));
       CloseableHttpClient client = mock(CloseableHttpClient.class);
       if (hasError) {
-        when(client.execute((HttpUriRequest) anyObject())).thenThrow(new IOException());
-        when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject())).thenThrow(new IOException());
+        when(client.execute((HttpUriRequest) any())).thenThrow(new IOException());
+        when(client.execute((HttpUriRequest) any(), (ResponseHandler) any())).thenThrow(new IOException());
 
       } else {
-        when(client.execute((HttpUriRequest) anyObject())).thenReturn(response);
-        when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject()))
+        when(client.execute((HttpUriRequest) any())).thenReturn(response);
+        when(client.execute((HttpUriRequest) any(), (ResponseHandler) any()))
             .thenReturn(responseContent);
       }
       mockBuilder = mock(HttpClientBuilder.class);
