@@ -20,9 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.adaptris.core.CoreException;
+import com.adaptris.core.http.oauth.AccessToken;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -35,8 +38,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.http.oauth.AccessToken;
 
 @SuppressWarnings("deprecation")
 public class SalesforceLoginWorkerTest {
@@ -62,7 +63,7 @@ public class SalesforceLoginWorkerTest {
     
     HttpEntity mockEntity = mock(HttpEntity.class);
     final CloseableHttpClient client = mock(CloseableHttpClient.class);
-    when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject())).thenReturn(ACCESS_TOKEN_WITH_TYPE);
+    when(client.execute((HttpUriRequest) any(), (ResponseHandler) any())).thenReturn(ACCESS_TOKEN_WITH_TYPE);
     
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128") {
       @Override
@@ -80,7 +81,7 @@ public class SalesforceLoginWorkerTest {
 
     HttpEntity mockEntity = mock(HttpEntity.class);
     final CloseableHttpClient client = mock(CloseableHttpClient.class);
-    when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject()))
+    when(client.execute((HttpUriRequest) any(), (ResponseHandler) any()))
         .thenThrow(new HttpResponseException(400, "Bad Request"));
 
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128") {
@@ -103,7 +104,7 @@ public class SalesforceLoginWorkerTest {
 
     HttpEntity mockEntity = mock(HttpEntity.class);
     final CloseableHttpClient client = mock(CloseableHttpClient.class);
-    when(client.execute((HttpUriRequest) anyObject(), (ResponseHandler) anyObject())).thenReturn(DUFF_JSON);
+    when(client.execute((HttpUriRequest) any(), (ResponseHandler) any())).thenReturn(DUFF_JSON);
 
 
     SalesforceLoginWorker worker = new SalesforceLoginWorker("http://localhost", "localhost:3128") {
