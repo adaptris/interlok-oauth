@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.apache.http.HttpEntity;
@@ -186,7 +186,7 @@ public class SalesforceAccessTokenTest {
     tokenBuilder.setConsumerKey("test");
     tokenBuilder.setConsumerSecret("test");
     AccessToken myAccessToken = new AccessToken("Bearer", "token");
-    when(worker.login((HttpEntity) anyObject())).thenReturn(myAccessToken);
+    when(worker.login((HttpEntity) any())).thenReturn(myAccessToken);
     try {
       LifecycleHelper.initAndStart(tokenBuilder);
       AccessToken token = tokenBuilder.build(AdaptrisMessageFactory.getDefaultInstance().newMessage());
@@ -210,7 +210,7 @@ public class SalesforceAccessTokenTest {
     tokenBuilder.setConsumerKey("test");
     tokenBuilder.setConsumerSecret("test");
     AccessToken myAccessToken = new AccessToken("Bearer", "token");
-    when(worker.login((HttpEntity) anyObject())).thenReturn(myAccessToken);
+    when(worker.login((HttpEntity) any())).thenReturn(myAccessToken);
     try {
       LifecycleHelper.initAndStart(tokenBuilder);
       AccessToken token = tokenBuilder.build(AdaptrisMessageFactory.getDefaultInstance().newMessage());

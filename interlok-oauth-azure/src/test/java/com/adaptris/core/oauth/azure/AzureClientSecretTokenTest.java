@@ -19,8 +19,8 @@ package com.adaptris.core.oauth.azure;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +70,7 @@ public class AzureClientSecretTokenTest {
         System.currentTimeMillis(), "idToken", null, true);
     Future<AuthenticationResult> mockFuture = mock(Future.class);
     when(mockFuture.get()).thenReturn(myAccessToken);
-    when(context.acquireToken(anyString(), (ClientCredential) anyObject(), (AuthenticationCallback) anyObject()))
+    when(context.acquireToken(anyString(), (ClientCredential) any(), (AuthenticationCallback) any()))
         .thenReturn(mockFuture);
 
     AzureClientSecretAccessToken tokenBuilder = new AzureClientSecretAccessToken() {
@@ -98,7 +98,7 @@ public class AzureClientSecretTokenTest {
     final AuthenticationContext context = mock(AuthenticationContext.class);
     Future<AuthenticationResult> mockFuture = mock(Future.class);
     when(mockFuture.get()).thenReturn(null);
-    when(context.acquireToken(anyString(), (ClientCredential) anyObject(), (AuthenticationCallback) anyObject()))
+    when(context.acquireToken(anyString(), (ClientCredential) any(), (AuthenticationCallback) any()))
         .thenReturn(mockFuture);
 
     AzureClientSecretAccessToken tokenBuilder = new AzureClientSecretAccessToken() {

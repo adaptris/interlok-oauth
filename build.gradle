@@ -1,14 +1,14 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '4.7.2' apply false
-  id 'org.owasp.dependencycheck' version '6.2.2' apply false
-  id "io.freefair.lombok" version "5.3.3.3" apply false
+  id 'com.github.spotbugs' version '4.7.9' apply false
+  id 'org.owasp.dependencycheck' version '6.5.0.1' apply false
+  id "io.freefair.lombok" version "6.2.0" apply false
 }
 
 ext {
- interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '4.2-SNAPSHOT'
-  releaseVersion = project.findProperty('releaseVersion') ?: '4.2-SNAPSHOT'
+ interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '4.3-SNAPSHOT'
+  releaseVersion = project.findProperty('releaseVersion') ?: '4.3-SNAPSHOT'
   nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -22,7 +22,7 @@ ext {
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.32'
-  mockitoVersion = '3.11.2'
+  mockitoVersion = '4.0.0'
 
 }
 
@@ -97,7 +97,7 @@ subprojects {
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
-  generateLombokConfig.enabled = false
+  lombok.disableConfig = true
 
   repositories {
     mavenCentral()
