@@ -6,9 +6,9 @@ ext {
 
 dependencies {
   api ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
-  api ("com.jayway.jsonpath:json-path:2.6.0")
-  api ("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-  testImplementation ("io.undertow:undertow-core:2.2.12.Final")
+  api ("com.jayway.jsonpath:json-path:2.7.0")
+  api ("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+  testImplementation ("io.undertow:undertow-core:2.2.14.Final")
  }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
