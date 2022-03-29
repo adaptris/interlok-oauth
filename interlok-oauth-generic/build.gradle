@@ -1,8 +1,8 @@
 ext {
-  componentName='Interlok OAUTH/Generic'
-  componentDesc='Handling OAUTH where the provider does not have an explicit API or SDK'
+  componentName = 'Interlok OAUTH/Generic'
+  componentDesc = 'Handling OAUTH where the provider does not have an explicit API or SDK'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jacksonVersion='2.13.2.20220324'
+  jacksonVersion = '2.13.2.20220324'
 }
 
 dependencies {
