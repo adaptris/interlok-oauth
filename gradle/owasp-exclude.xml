@@ -17,5 +17,15 @@ OpenID allows remote attackers to forcibly log a user into an OpenID enabled sit
     <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-context@.*$</packageUrl>
     <cve>CVE-2020-7768</cve>
   </suppress>
+  <suppress>
+     <notes><![CDATA[
+     file name: adal4j-1.6.7.jar
+	 The issue is not in the jar but with Azure Active Directory:
+	 An information disclosure vulnerability manifests when a user or an application uploads unprotected private key data as part of an authentication certificate keyCredential
+	 on an Azure AD Application or Service Principal (which is not recommended).
+     ]]></notes>
+     <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/adal4j@.*$</packageUrl>
+     <cve>CVE-2021-42306</cve>
+  </suppress>
 
 </suppressions>
