@@ -27,5 +27,12 @@ OpenID allows remote attackers to forcibly log a user into an OpenID enabled sit
      <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/adal4j@.*$</packageUrl>
      <cve>CVE-2021-42306</cve>
   </suppress>
-
+  <suppress>
+     <notes><![CDATA[
+     file name: google-http-client-gson-1.41.7.jar
+     False positive as there is no issue in google-http-client-gson but in com.google.code.gson:gson < 2.8.9
+     ]]></notes>
+     <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-gson@.*$</packageUrl>
+     <cve>CVE-2022-25647</cve>
+  </suppress>
 </suppressions>
