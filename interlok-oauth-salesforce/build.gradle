@@ -1,13 +1,16 @@
 ext {
-  componentName='Interlok OAUTH/Salesforce'
-  componentDesc='Retrieving OAUTH access tokens from Salesforce'
+  componentName = 'Interlok OAUTH/Salesforce'
+  componentDesc = 'Retrieving OAUTH access tokens from Salesforce'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  jacksonVersion = '2.13.3'
 }
 
 dependencies {
   api ("org.apache.httpcomponents:httpclient:4.5.13")
   api ("commons-codec:commons-codec:1.15")
-  api ("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+  // Dependency to platform/BOM
+  implementation (platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+  api ("com.fasterxml.jackson.core:jackson-databind")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
