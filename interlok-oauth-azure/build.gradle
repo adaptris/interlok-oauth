@@ -10,7 +10,7 @@ dependencies {
   }
   implementation ("com.google.code.gson:gson:2.9.0")
   api "net.minidev:json-smart:2.4.8"
-  api "com.nimbusds:nimbus-jose-jwt:9.22"
+  api "com.nimbusds:nimbus-jose-jwt:9.23"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
