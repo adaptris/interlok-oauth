@@ -21,7 +21,7 @@ ext {
 
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '2.0.0'
+  slf4jVersion = '2.0.1'
   mockitoVersion = '4.8.0'
 
 }
