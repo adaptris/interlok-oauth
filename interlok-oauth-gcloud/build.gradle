@@ -5,7 +5,7 @@ ext {
 }
 
 dependencies {
-  api "com.google.auth:google-auth-library-oauth2-http:1.11.0"
+  api "com.google.auth:google-auth-library-oauth2-http:1.13.0"
   api "com.google.guava:guava:31.1-jre"
   api "org.apache.httpcomponents:httpclient:4.5.13"
   api "commons-codec:commons-codec:1.15"
