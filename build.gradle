@@ -1,14 +1,14 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '5.0.12' apply false
-  id 'org.owasp.dependencycheck' version '7.2.1' apply false
+  id 'com.github.spotbugs' version '5.0.13' apply false
+  id 'org.owasp.dependencycheck' version '7.4.4' apply false
   id "io.freefair.lombok" version "6.5.1" apply false
 }
 
 ext {
- interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '4.6-SNAPSHOT'
-  releaseVersion = project.findProperty('releaseVersion') ?: '4.6-SNAPSHOT'
+ interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '4.7-SNAPSHOT'
+  releaseVersion = project.findProperty('releaseVersion') ?: '4.7-SNAPSHOT'
   nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -22,7 +22,7 @@ ext {
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '2.0.3'
-  mockitoVersion = '4.8.0'
+  mockitoVersion = '4.9.0'
 
 }
 
