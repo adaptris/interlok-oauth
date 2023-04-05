@@ -7,7 +7,7 @@ ext {
 
 dependencies {
   api ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
-  api ("com.jayway.jsonpath:json-path:2.7.0")
+  api ("com.jayway.jsonpath:json-path:2.8.0")
   // Dependency to platform/BOM
   implementation (platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
   api ("com.fasterxml.jackson.core:jackson-databind")
