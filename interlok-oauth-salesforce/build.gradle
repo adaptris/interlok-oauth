@@ -6,7 +6,7 @@ ext {
 }
 
 dependencies {
-  api ("org.apache.httpcomponents:httpclient:4.5.13")
+  api ("org.apache.httpcomponents:httpclient:4.5.14")
   api ("commons-codec:commons-codec:1.15")
   // Dependency to platform/BOM
   implementation (platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
