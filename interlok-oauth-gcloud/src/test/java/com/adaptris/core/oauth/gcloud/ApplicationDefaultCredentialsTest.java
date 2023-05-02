@@ -18,14 +18,14 @@ package com.adaptris.core.oauth.gcloud;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ApplicationDefaultCredentialsTest {

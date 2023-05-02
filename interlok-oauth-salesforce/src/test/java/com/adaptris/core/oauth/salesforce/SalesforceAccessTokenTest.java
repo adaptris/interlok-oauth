@@ -16,16 +16,16 @@
 
 package com.adaptris.core.oauth.salesforce;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.apache.http.HttpEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
@@ -33,7 +33,7 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class SalesforceAccessTokenTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }
