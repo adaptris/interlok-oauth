@@ -23,7 +23,9 @@ ext {
   organizationName = "Adaptris Ltd"
   slf4jVersion = '2.0.3'
   mockitoVersion = '4.9.0'
-
+  
+  interlokCommonsOfflineJavadocDir = project.rootDir.getCanonicalPath() + "/interlok-common/build/docs/javadoc"
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 ext.hasGraphViz = { ->
@@ -90,8 +92,8 @@ subprojects {
   apply plugin: "io.freefair.lombok"
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
 
   group   = 'com.adaptris'
@@ -173,6 +175,12 @@ subprojects {
       options.addStringOption('Xdoclint:none', '-quiet')
     }
   }
+  
+  test {
+  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+  useJUnitPlatform()
+  }
+
 
   jacocoTestReport {
       reports {
