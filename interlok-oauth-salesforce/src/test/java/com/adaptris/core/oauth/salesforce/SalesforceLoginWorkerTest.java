@@ -169,7 +169,7 @@ public class SalesforceLoginWorkerTest {
     handler.throwExceptionIfAny();
   }
 
-  @Test()
+  @Test
   public void testCustomResponseHandler_NotFound() throws Exception {
     BasicStatusLine status = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NOT_FOUND, "Not Found");
     CloseableHttpResponse response = mock(CloseableHttpResponse.class);
