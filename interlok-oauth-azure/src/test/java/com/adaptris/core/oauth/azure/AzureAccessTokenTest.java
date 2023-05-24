@@ -16,10 +16,10 @@
 
 package com.adaptris.core.oauth.azure;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
@@ -27,7 +27,7 @@ import com.adaptris.core.util.LifecycleHelper;
 @SuppressWarnings("deprecation")
 public class AzureAccessTokenTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }

@@ -23,7 +23,6 @@ ext {
   organizationName = "Adaptris Ltd"
   slf4jVersion = '2.0.3'
   mockitoVersion = '4.9.0'
-
 }
 
 ext.hasGraphViz = { ->
@@ -90,8 +89,8 @@ subprojects {
   apply plugin: "io.freefair.lombok"
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
 
   group   = 'com.adaptris'
@@ -145,7 +144,8 @@ subprojects {
       api ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       implementation ("org.slf4j:slf4j-api:$slf4jVersion")
       annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      testImplementation ('junit:junit:4.13.2')
+      testImplementation ("org.junit.jupiter:junit-jupiter-api:5.9.2")
+      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.2")
       testImplementation ("org.slf4j:slf4j-simple:$slf4jVersion")
       testImplementation ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true }
       testImplementation ("org.mockito:mockito-core:$mockitoVersion")
@@ -172,6 +172,12 @@ subprojects {
       options.addStringOption('Xdoclint:none', '-quiet')
     }
   }
+  
+  test {
+  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+  useJUnitPlatform()
+  }
+
 
   jacocoTestReport {
       reports {
