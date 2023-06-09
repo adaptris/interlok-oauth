@@ -5,11 +5,11 @@ ext {
 }
 
 dependencies {
-  api "com.google.auth:google-auth-library-oauth2-http:1.11.0"
-  api "com.google.guava:guava:31.1-jre"
+  api "com.google.auth:google-auth-library-oauth2-http:1.17.0"
+  api "com.google.guava:guava:32.0.0-jre"
   api "org.apache.httpcomponents:httpclient:4.5.14"
   api "commons-codec:commons-codec:1.15"
-  api "com.fasterxml.jackson.core:jackson-core:2.15.0"
+  api "com.fasterxml.jackson.core:jackson-core:2.15.2"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
