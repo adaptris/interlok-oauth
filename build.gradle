@@ -22,8 +22,7 @@ ext {
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   slf4jVersion = '2.0.7'
-  mockitoVersion = '4.9.0'
-
+  mockitoVersion = '5.2.0'
 }
 
 ext.hasGraphViz = { ->
@@ -111,7 +110,6 @@ subprojects {
     maven { url "$nexusBaseUrl/content/groups/interlok" }
   }
 
-
   configurations {
     javadoc {}
     umlDoclet {}
@@ -156,7 +154,6 @@ subprojects {
       offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
       offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
       offlineJavadocPackages ("com.adaptris:interlok-apache-http:$interlokCoreVersion:javadoc@jar") { changing= true}
-
   }
 
   javadoc {
@@ -175,10 +172,10 @@ subprojects {
   }
 
   jacocoTestReport {
-      reports {
-          xml.required= true
-          html.required= true
-      }
+    reports {
+      xml.required= true
+      html.required= true
+    }
   }
 
   sourceSets {
@@ -203,7 +200,6 @@ subprojects {
       }
     }
   }
-
 
   task offlinePackageList(type: Copy) {
     description 'Build an offline package-list for javadocs'
@@ -296,5 +292,4 @@ subprojects {
 
   check.dependsOn jacocoTestReport
   javadoc.dependsOn offlinePackageList,umlJavadoc
-
 }
