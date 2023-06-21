@@ -97,7 +97,7 @@ public class XmlResponseHandler extends ResponseHandlerImpl {
   @Override
   public AccessToken buildToken(String loginResponse) throws CoreException {
     XPath xpath = XPath.newXPathInstance(factoryBuilder, nsCtx);
-    try (ReaderInputStream in = new ReaderInputStream(new StringReader(loginResponse), Charset.defaultCharset())) {
+    try (ReaderInputStream in = ReaderInputStream.builder().setReader(new StringReader(loginResponse)).setCharset(Charset.defaultCharset()).get()) {
       Document xml = XmlHelper.createDocument(in, factoryBuilder);
 
       String accessToken = xpath.selectSingleTextItem(xml, getAccessTokenPath());
