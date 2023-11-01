@@ -1,8 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '5.2.1' apply false
-  id 'org.owasp.dependencycheck' version '8.4.2' apply false
+  id "com.github.spotbugs" version "5.2.1" apply false
+  id "org.sonarqube" version "4.4.1.3373"
+  id "org.owasp.dependencycheck" version "8.4.2" apply false
   id "io.freefair.lombok" version "8.4" apply false
 }
 
@@ -39,13 +40,6 @@ ext.hasGraphViz = { ->
   }
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption "Xdoclint:none", "-quiet"
-    }
-  }
-}
 ext.gitBranchNameOrTimestamp = { branchName ->
   if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
     return new Date().format('HH:mm:ss z');
@@ -69,6 +63,22 @@ task clean(type: Delete) {
   delete project.buildDir
 }
 
+sonar {
+  properties {
+    property "sonar.projectKey", "adaptris_interlok-oauth"
+    property "sonar.organization", "adaptris-org"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
+
+sonar {
+  properties {
+    property "sonar.projectKey", "adaptris_interlok-oauth"
+    property "sonar.organization", "adaptris-org"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
+
 allprojects {
   tasks.withType(Jar) {
     metaInf {
@@ -84,11 +94,12 @@ allprojects {
 }
 
 subprojects {
-  apply plugin: 'java-library'
-  apply plugin: 'maven-publish'
-  apply plugin: 'jacoco'
-  apply plugin: 'com.github.spotbugs'
-  apply plugin: 'org.owasp.dependencycheck'
+  apply plugin: "java-library"
+  apply plugin: "maven-publish"
+  apply plugin: "jacoco"
+  apply plugin: "com.github.spotbugs"
+  apply plugin: "org.sonarqube"
+  apply plugin: "org.owasp.dependencycheck"
   apply plugin: "io.freefair.lombok"
 
   java {
