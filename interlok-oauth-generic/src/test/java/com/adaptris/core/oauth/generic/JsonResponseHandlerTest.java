@@ -20,13 +20,13 @@ import static com.adaptris.core.oauth.generic.JsonResponseHandler.ACCESS_TOKEN_P
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.EXPIRES_PATH;
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.REFRESH_TOKEN_PATH;
 import static com.adaptris.core.oauth.generic.JsonResponseHandler.TOKEN_TYPE_PATH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.LifecycleHelper;
@@ -41,7 +41,7 @@ public class JsonResponseHandlerTest {
   public static final String ACCESS_TOKEN_WITH_REFRESH =
       "{ \"access_token\": \"TheAccessToken\", \"token_type\": \"Bearer\", \"expires_in\": 600, \"refresh_token\": \"TheRefreshToken\"}";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }

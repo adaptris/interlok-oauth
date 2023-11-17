@@ -19,13 +19,13 @@ package com.adaptris.core.oauth.generic;
 import static com.adaptris.core.oauth.generic.XmlResponseHandler.ACCESS_TOKEN_PATH;
 import static com.adaptris.core.oauth.generic.XmlResponseHandler.EXPIRES_PATH;
 import static com.adaptris.core.oauth.generic.XmlResponseHandler.TOKEN_TYPE_PATH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.oauth.AccessToken;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -43,7 +43,7 @@ public class XmlResponseHandlerTest {
   public static final String ACCESS_TOKEN_WITH_REFRESH =
       "<root><access_token>token</access_token><token_type>Bearer</token_type><expires_in>600</expires_in><refresh_token>TheRefreshToken</refresh_token></root>";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }

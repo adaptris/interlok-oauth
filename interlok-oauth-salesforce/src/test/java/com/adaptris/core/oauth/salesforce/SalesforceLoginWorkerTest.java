@@ -16,10 +16,11 @@
 
 package com.adaptris.core.oauth.salesforce;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,8 +37,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
 public class SalesforceLoginWorkerTest {
@@ -46,7 +47,7 @@ public class SalesforceLoginWorkerTest {
   private static final String ACCESS_TOKEN = "{\"access_token\" : \"token\"}";
   private static final String DUFF_JSON = "{\"blahblah\" : \"token\"}";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }
@@ -168,7 +169,7 @@ public class SalesforceLoginWorkerTest {
     handler.throwExceptionIfAny();
   }
 
-  @Test(expected = HttpResponseException.class)
+  @Test
   public void testCustomResponseHandler_NotFound() throws Exception {
     BasicStatusLine status = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NOT_FOUND, "Not Found");
     CloseableHttpResponse response = mock(CloseableHttpResponse.class);
@@ -181,7 +182,10 @@ public class SalesforceLoginWorkerTest {
     assertEquals(ACCESS_TOKEN_WITH_TYPE, handler.handleResponse(response));
     assertNotNull(handler.statusLine());
     assertTrue(handler.statusLine().contains("HTTP/1.1"));
-    handler.throwExceptionIfAny();
+    assertThrows(HttpResponseException.class, ()->{
+      handler.throwExceptionIfAny();
+    }, "Failed with non 2xx response code.");
   }
+  
 
 }
