@@ -1,9 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id "com.github.spotbugs" version "6.0.4" apply false
+  id "com.github.spotbugs" version "6.0.6" apply false
   id "org.sonarqube" version "4.4.1.3373"
-  id "org.owasp.dependencycheck" version "9.0.6" apply false
+  id "org.owasp.dependencycheck" version "9.0.8" apply false
   id "io.freefair.lombok" version "8.4" apply false
 }
 
@@ -22,7 +22,7 @@ ext {
 
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '2.0.9'
+  slf4jVersion = '2.0.10'
   mockitoVersion = '5.2.0'
 }
 
