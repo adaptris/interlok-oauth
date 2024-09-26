@@ -8,9 +8,9 @@ dependencies {
   api ("com.microsoft.azure:adal4j:1.6.7") {
     exclude group: "com.google.code.gson", module: "gson"
   }
-  implementation ("com.google.code.gson:gson:2.10.1")
+  implementation ("com.google.code.gson:gson:2.11.0")
   api "net.minidev:json-smart:2.5.1"
-  api "com.nimbusds:nimbus-jose-jwt:9.39"
+  api "com.nimbusds:nimbus-jose-jwt:9.40"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
