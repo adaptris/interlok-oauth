@@ -2,7 +2,7 @@ ext {
   componentName = 'Interlok OAUTH/Salesforce'
   componentDesc = 'Retrieving OAUTH access tokens from Salesforce'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jacksonVersion = '2.18.0'
+  jacksonVersion = '2.18.1'
 }
 
 dependencies {
