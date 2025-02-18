@@ -24,6 +24,7 @@ ext {
   organizationName = "Adaptris Ltd"
   slf4jVersion = '2.0.16'
   mockitoVersion = '5.2.0'
+  junitVersion = '5.11.4'
 }
 
 // If graphviz is installed via scoop, plantuml doesn't find it because it's not
@@ -158,8 +159,8 @@ subprojects {
       api ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       implementation ("org.slf4j:slf4j-api:$slf4jVersion")
       annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.3")
-      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+      testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+      testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
       testImplementation ("org.slf4j:slf4j-simple:$slf4jVersion")
       testImplementation ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true }
       testImplementation ("org.mockito:mockito-core:$mockitoVersion")
