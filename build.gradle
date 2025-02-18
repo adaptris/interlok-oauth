@@ -1,10 +1,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id "com.github.spotbugs" version "6.0.21" apply false
-  id "org.sonarqube" version "4.4.1.3373"
-  id "org.owasp.dependencycheck" version "10.0.3" apply false
-  id "io.freefair.lombok" version "8.10" apply false
+  id "com.github.spotbugs" version "6.0.27" apply false
+  id "org.sonarqube" version "6.0.1.5171"
+  id "org.owasp.dependencycheck" version "11.1.1" apply false
+  id "io.freefair.lombok" version "8.11" apply false
 }
 
 ext {
@@ -158,15 +158,15 @@ subprojects {
       api ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       implementation ("org.slf4j:slf4j-api:$slf4jVersion")
       annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.0")
-      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+      testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.3")
+      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
       testImplementation ("org.slf4j:slf4j-simple:$slf4jVersion")
       testImplementation ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true }
       testImplementation ("org.mockito:mockito-core:$mockitoVersion")
       testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
 
       javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      umlDoclet("nl.talsmasoftware:umldoclet:2.2.0")
+      umlDoclet("nl.talsmasoftware:umldoclet:2.2.1")
       offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
       offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
       offlineJavadocPackages ("com.adaptris:interlok-apache-http:$interlokCoreVersion:javadoc@jar") { changing= true}
