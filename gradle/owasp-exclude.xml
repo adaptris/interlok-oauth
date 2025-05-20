@@ -35,4 +35,10 @@ OpenID allows remote attackers to forcibly log a user into an OpenID enabled sit
      <packageUrl regex="true">^pkg:maven/com\.google\.http\-client/google\-http\-client\-gson@.*$</packageUrl>
      <cve>CVE-2022-25647</cve>
   </suppress>
+  <suppress>
+     <notes><![CDATA[
+     This vulnerability is inherited via com.jayway.jsonpath:json-path:2.9.0 however that is currently the most up-to-date version.
+     ]]></notes>
+     <cve>CVE-2024-57699</cve>
+  </suppress>
 </suppressions>

@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
   id "com.github.spotbugs" version "6.1.11" apply false
   id "org.sonarqube" version "6.2.0.5505"
-  id "org.owasp.dependencycheck" version "11.1.1" apply false
+  id "org.owasp.dependencycheck" version "12.1.1" apply false
   id "io.freefair.lombok" version "8.13.1" apply false
 }
 
@@ -302,7 +302,6 @@ subprojects {
     }
     analyzers {
       assemblyEnabled=false
-      knownExploitedURL=project.findProperty('dependencyCheckKnownExploitedURL')
     }
   }
 
