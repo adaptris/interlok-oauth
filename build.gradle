@@ -1,8 +1,8 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id "com.github.spotbugs" version "6.1.10" apply false
-  id "org.sonarqube" version "6.1.0.5360"
+  id "com.github.spotbugs" version "6.1.11" apply false
+  id "org.sonarqube" version "6.2.0.5505"
   id "org.owasp.dependencycheck" version "12.1.1" apply false
   id "io.freefair.lombok" version "8.13.1" apply false
 }
@@ -22,7 +22,7 @@ ext {
 
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '2.0.16'
+  slf4jVersion = '2.0.17'
   mockitoVersion = '5.2.0'
 }
 
@@ -159,7 +159,8 @@ subprojects {
       implementation ("org.slf4j:slf4j-api:$slf4jVersion")
       annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
       testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.3")
-      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
+    testImplementation ("org.junit.platform:junit-platform-launcher:1.12.1")
       testImplementation ("org.slf4j:slf4j-simple:$slf4jVersion")
       testImplementation ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true }
       testImplementation ("org.mockito:mockito-core:$mockitoVersion")
