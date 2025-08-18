@@ -17,7 +17,7 @@
 package com.adaptris.core.oauth.azure;
 
 import java.util.concurrent.Future;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
