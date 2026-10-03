@@ -13,7 +13,7 @@
  */
 package com.adaptris.core.oauth.generic;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;

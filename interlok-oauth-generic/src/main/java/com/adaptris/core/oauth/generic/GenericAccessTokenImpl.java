@@ -18,9 +18,9 @@ package com.adaptris.core.oauth.generic;
 
 import java.io.IOException;
 import java.util.function.Consumer;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
