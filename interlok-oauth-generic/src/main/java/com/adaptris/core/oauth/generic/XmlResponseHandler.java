@@ -18,7 +18,7 @@ package com.adaptris.core.oauth.generic;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.w3c.dom.Document;

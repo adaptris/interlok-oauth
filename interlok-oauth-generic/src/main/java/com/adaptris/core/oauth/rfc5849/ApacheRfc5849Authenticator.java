@@ -13,8 +13,8 @@
  */
 package com.adaptris.core.oauth.rfc5849;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.apache.http.client.methods.HttpRequestBase;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;

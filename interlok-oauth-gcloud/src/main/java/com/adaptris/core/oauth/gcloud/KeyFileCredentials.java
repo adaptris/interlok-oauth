@@ -23,8 +23,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
