@@ -8,8 +8,10 @@ plugins {
 }
 
 ext {
- interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '5.0-SNAPSHOT'
-  releaseVersion = project.findProperty('releaseVersion') ?: '5.0-SNAPSHOT'
+  interlokCatalogVersion = project.findProperty('interlokCatalogVersion') ?: '5.0-SNAPSHOT'
+  interlokCatalogPlatform = "com.adaptris:interlok-version-catalog:${interlokCatalogVersion}"
+ interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: interlokCatalogVersion
+  releaseVersion = project.findProperty('releaseVersion') ?: interlokCatalogVersion
   nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -22,8 +24,6 @@ ext {
 
   interlokApacheHttpJavadocs= project.findProperty('interlokApacheHttpJavadocs') ?: javadocsBaseUrl + "/interlok-apache-http/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
-  slf4jVersion = '2.0.20'
-  mockitoVersion = '5.2.0'
 }
 
 // If graphviz is installed via scoop, plantuml doesn't find it because it's not
@@ -154,23 +154,34 @@ subprojects {
 
   // In this section you declare the dependencies for your production and test code
   dependencies {
-      api ("com.adaptris:interlok-core:$interlokCoreVersion") { changing= true}
-      api ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      implementation ("org.slf4j:slf4j-api:$slf4jVersion")
-      annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.3")
-      testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.13.4")
-    testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
-      testImplementation ("org.slf4j:slf4j-simple:$slf4jVersion")
-      testImplementation ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true }
-      testImplementation ("org.mockito:mockito-core:$mockitoVersion")
-      testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
+    api platform(interlokCatalogPlatform)
+    implementation platform(interlokCatalogPlatform)
+    compileOnly platform(interlokCatalogPlatform)
+    annotationProcessor platform(interlokCatalogPlatform)
+    testImplementation platform(interlokCatalogPlatform)
+    testCompileOnly platform(interlokCatalogPlatform)
+    testRuntimeOnly platform(interlokCatalogPlatform)
+    testAnnotationProcessor platform(interlokCatalogPlatform)
+    javadoc platform(interlokCatalogPlatform)
+    offlineJavadocPackages platform(interlokCatalogPlatform)
+    umlDoclet platform(interlokCatalogPlatform)
 
-      javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
-      umlDoclet("nl.talsmasoftware:umldoclet:2.2.1")
-      offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
-      offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
-      offlineJavadocPackages ("com.adaptris:interlok-apache-http:$interlokCoreVersion:javadoc@jar") { changing= true}
+      api ("com.adaptris:interlok-core") { changing= true}
+      api ("com.adaptris:interlok-core-apt") { changing= true}
+      implementation ("org.slf4j:slf4j-api")
+      annotationProcessor ("com.adaptris:interlok-core-apt") { changing= true}
+      testImplementation ("org.junit.jupiter:junit-jupiter-api")
+      testImplementation ("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation ("org.junit.platform:junit-platform-launcher")
+      testImplementation ("org.slf4j:slf4j-simple")
+      testImplementation ("com.adaptris:interlok-stubs") { changing= true }
+      testImplementation ("org.mockito:mockito-core")
+
+      javadoc("com.adaptris:interlok-core-apt") { changing= true}
+      umlDoclet("nl.talsmasoftware:umldoclet")
+      offlineJavadocPackages ("com.adaptris:interlok-core::javadoc@jar") { changing= true}
+      offlineJavadocPackages ("com.adaptris:interlok-common::javadoc@jar") { changing= true}
+      offlineJavadocPackages ("com.adaptris:interlok-apache-http::javadoc@jar") { changing= true}
 
   }
 
