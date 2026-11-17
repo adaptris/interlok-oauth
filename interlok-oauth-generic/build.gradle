@@ -2,16 +2,15 @@ ext {
   componentName = 'Interlok OAUTH/Generic'
   componentDesc = 'Handling OAUTH where the provider does not have an explicit API or SDK'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jacksonVersion = '2.23.0'
 }
 
 dependencies {
-  api ("com.adaptris:interlok-apache-http:$interlokCoreVersion") { changing= true}
-  api ("com.jayway.jsonpath:json-path:2.9.0")
+  api ("com.adaptris:interlok-apache-http") { changing= true}
+  api ("com.jayway.jsonpath:json-path")
   // Dependency to platform/BOM
-  implementation (platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+  implementation (platform("com.fasterxml.jackson:jackson-bom"))
   api ("com.fasterxml.jackson.core:jackson-databind")
-  testImplementation ("io.undertow:undertow-core:2.4.4.Final")
+  testImplementation ("io.undertow:undertow-core")
  }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

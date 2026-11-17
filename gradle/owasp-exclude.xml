@@ -36,12 +36,6 @@ OpenID allows remote attackers to forcibly log a user into an OpenID enabled sit
      <cve>CVE-2022-25647</cve>
   </suppress>
   <suppress>
-     <notes><![CDATA[
-     This vulnerability is inherited via com.jayway.jsonpath:json-path:2.9.0 however that is currently the most up-to-date version.
-     ]]></notes>
-     <cve>CVE-2024-57699</cve>
-  </suppress>
-  <suppress>
     <notes><![CDATA[
       file name: spring-boot-loader-2.7.18.jar
       We are pinned to Spring Boot 2.7.x on Java 17. There is no newer 2.7.x release in Maven Central,
@@ -60,4 +54,22 @@ OpenID allows remote attackers to forcibly log a user into an OpenID enabled sit
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.26$</packageUrl>
     <cve>CVE-2026-2332</cve>
-  </suppress></suppressions>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2025-53864 affects Nimbus JOSE+JWT before 10.0.2, including 9.47 and 9.48.
+      The 9.37.4 backport fixes the older 9.37 branch but would downgrade the current 9.47
+      dependency; no non-downgrading stable 9.x fix is published. A 10.x upgrade is deferred
+      pending investigation of the existing cross-repository major-version conflict.
+      https://github.com/advisories/GHSA-xwmg-2g98-w7v9
+      https://repo.maven.apache.org/maven2/com/nimbusds/nimbus-jose-jwt/maven-metadata.xml
+      The scanner attaches this Nimbus finding to its embedded Gson 2.11.0 metadata.
+      Upgrading the external Gson dependency cannot replace shaded classes inside Nimbus.
+      This suppression matches only that exact embedded dependency, not Gson generally.
+      Deeply nested untrusted JWT claim sets can still cause uncontrolled recursion and
+      denial of service; this remains an accepted risk, not a remediated vulnerability.
+    ]]></notes>
+    <filePath regex="true">.*[\\/]nimbus-jose-jwt-9\.47\.jar[\\/]META-INF[\\/]maven[\\/]com\.google\.code\.gson[\\/]gson[\\/]pom\.xml$</filePath>
+    <cve>CVE-2025-53864</cve>
+  </suppress>
+</suppressions>
